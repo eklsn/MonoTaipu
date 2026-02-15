@@ -11,11 +11,21 @@ namespace Taipu
         public Vector2 scale = Vector2.One;
         public Vector2 origin = Vector2.Zero;
         public Vector2 centerOrigin => size / 2f;
-        public Vector2 scaledOrigin => origin * scale;
+        public Vector2 scaledOrigin {
+            get
+            {
+                if (origin == centerOrigin) {
+                    return scaledSize / 2f;
+                }
+                else
+                {
+                    return origin * scale;
+                }
+            }
+        }
         public Vector2 scaledSize => size * scale;
         public Color color = Color.White;
         public bool visible = true;
-        public Rectangle rect => new Rectangle((int)(position.X - scaledOrigin.X), (int)(position.Y - scaledOrigin.Y), (int)scaledSize.X, (int)scaledSize.Y);
         public Sprite(Texture2D texture, Vector2 position)
         {
             this.texture = texture;
@@ -23,11 +33,21 @@ namespace Taipu
             this.size.X = texture.Width;
             this.size.Y = texture.Height;
         }
-        public void Draw()
+        public virtual void Draw()
         {
             if (visible)
             {
-                Global.spriteBatch.Draw(texture, rect, color);
+                Global.spriteBatch.Draw(
+                    texture: texture,
+                    position: position,
+                    sourceRectangle: null,
+                    color: color,
+                    rotation: 0f,
+                    origin: origin,
+                    scale: scale,
+                    effects: SpriteEffects.None,
+                    layerDepth: 0f
+                );
             }
         }
     }

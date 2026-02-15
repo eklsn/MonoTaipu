@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,9 +32,17 @@ namespace Taipu
         {
             return ExtContent.getTexture(Path.Combine(skinFolder, path));
         }
+        public static BitmapFont getFont(String path)
+        {
+            return ExtContent.getFont(Path.Combine(skinFolder, path));
+        }
         public static String getAbsPath(String path)
         {
             return Path.Combine(skinFolderAbs, path);
+        }
+        public static String getRelPath(String path)
+        {
+            return Path.Combine(skinFolder, path);
         }
     }
 }
