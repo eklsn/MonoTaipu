@@ -32,19 +32,14 @@ namespace Taipu
         }
         public void Start(bool restart) {
             Bass.ChannelPlay(tempoStream, restart);
-            if (metronome != null)
-            {
-                metronome.CalculateBeat(streamPositionBytes);
-            }
+            metronome?.CalculateBeat(streamPositionBytes);
         }
 
         public void Stop() => Bass.ChannelStop(tempoStream);
         public void Seek(double secondsPosition)
         {
             Bass.ChannelSetPosition(tempoStream, Bass.ChannelSeconds2Bytes(tempoStream,secondsPosition));
-            if (metronome != null){
-               metronome.CalculateBeat(streamPositionBytes);
-            }
+            metronome?.CalculateBeat(streamPositionBytes);
         }
     }
 }

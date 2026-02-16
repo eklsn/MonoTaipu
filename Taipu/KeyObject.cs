@@ -187,16 +187,16 @@ namespace Taipu
             Blur.color = color * blurColor;
             HitRank.color = color * hitColor;
             HitRank.scale = scale * hitScale;
-            textScale = new Vector2(this.fontScale.X * this.scale.X);
+            textScale = new(this.fontScale.X * this.scale.X);
             if (keyText !=measuredText) {
                 textMeas = font.MeasureString(keyText);
                 measuredText = keyText;
             }
             float uniformScale = (float)this.scale.X;
-            Vector2 baseOffset = new Vector2(8f, -12f);
+            Vector2 baseOffset = new(8f, -12f);
             Vector2 scalableShift = baseOffset * uniformScale;
             textPosition = position - scalableShift;
-            textOrigin = new Vector2(textMeas.X / 2f, textMeas.Y / 2f);
+            textOrigin = new(textMeas.X / 2f, textMeas.Y / 2f);
         }
         public void Draw()
         {
