@@ -1,13 +1,7 @@
 ﻿using ManagedBass;
 using ManagedBass.Fx;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Taipu
 {
