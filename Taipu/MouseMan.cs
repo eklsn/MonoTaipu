@@ -24,102 +24,39 @@ namespace Taipu
         }
         public static bool RightJustPressed()
         {
-            if (currentMouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released);
         }
         public static bool RightDown()
         {
-            if (currentMouse.RightButton == ButtonState.Pressed)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.RightButton == ButtonState.Pressed);
         }
         public static bool LeftDown()
         {
-            if (currentMouse.LeftButton == ButtonState.Pressed)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.LeftButton == ButtonState.Pressed) ;
         }
         public static bool MiddleDown()
         {
-            if (currentMouse.MiddleButton == ButtonState.Pressed)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.MiddleButton == ButtonState.Pressed);
         }
         public static bool RightReleased()
         {
-            if (currentMouse.RightButton == ButtonState.Released)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.RightButton == ButtonState.Released);
         }
         public static bool LeftReleased()
         {
-            if (currentMouse.LeftButton == ButtonState.Released)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.LeftButton == ButtonState.Released);
         }
         public static bool MiddleReleased()
         {
-            if (currentMouse.MiddleButton == ButtonState.Released)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.MiddleButton == ButtonState.Released) ;
         }
         public static bool LeftJustPressed()
         {
-            if (currentMouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released);
         }
         public static bool MiddleJustPressed()
         {
-            if (currentMouse.MiddleButton == ButtonState.Pressed && previousMouse.MiddleButton == ButtonState.Released)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentMouse.MiddleButton == ButtonState.Pressed && previousMouse.MiddleButton == ButtonState.Released);
         }
     }
 }

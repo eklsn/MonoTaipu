@@ -19,36 +19,15 @@ namespace Taipu
         }
         public static bool JustPressed(Keys key)
         {
-            if (currentKeyboard.IsKeyDown(key) && previousKeyboard.IsKeyUp(key))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentKeyboard.IsKeyDown(key) && previousKeyboard.IsKeyUp(key));
         }
         public static bool Down(Keys key)
         {
-            if (currentKeyboard.IsKeyDown(key))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentKeyboard.IsKeyDown(key));
         }
         public static bool Up(Keys key)
         {
-            if (currentKeyboard.IsKeyUp(key))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (currentKeyboard.IsKeyUp(key));
         }
     }
 }
