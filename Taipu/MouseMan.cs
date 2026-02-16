@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Taipu
 {
@@ -32,7 +27,7 @@ namespace Taipu
         }
         public static bool LeftDown()
         {
-            return (currentMouse.LeftButton == ButtonState.Pressed) ;
+            return (currentMouse.LeftButton == ButtonState.Pressed);
         }
         public static bool MiddleDown()
         {
@@ -48,7 +43,7 @@ namespace Taipu
         }
         public static bool MiddleReleased()
         {
-            return (currentMouse.MiddleButton == ButtonState.Released) ;
+            return (currentMouse.MiddleButton == ButtonState.Released);
         }
         public static bool LeftJustPressed()
         {
