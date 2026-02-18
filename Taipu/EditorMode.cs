@@ -29,7 +29,7 @@ namespace Taipu
                 level = (TaipuLevel)JsonSerializer.Deserialize(json, typeof(TaipuLevel), options);
             }
             font = SkinLoader.getFont("fonts/main/main.fnt");
-            jbox.LoadStream("D:/Taipu/test.mp3");
+            jbox.LoadStream("music.mp3");
             jbox.Start(true);
             keyboard = new();
             renderKeys = new();
