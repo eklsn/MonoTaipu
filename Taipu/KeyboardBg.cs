@@ -50,7 +50,7 @@ namespace Taipu
         {
             return keyArr[key].position;
         }
-        public void Update() { }
+        //public void Update() { }
         public void Draw()
         {
             foreach (var key in keyArr)

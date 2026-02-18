@@ -34,23 +34,19 @@ namespace Taipu
 
         public Texture2D atlasTex;
 
-        public double appearTime = 0.3;
-        public double preRingTime = 0.5;
-        public double ringTime = 0.5;
+        public double appearTime = 0;
+        public double preRingTime = 0;
+        public double ringTime = 0;
         public double hitTimeframe = 0;
-        public double disappearTime = 0.5;
+        public double disappearTime = 0;
 
         public double keyTime = 0;  
 
-        public int keyType = 0;
-        public int myIndex = 0;
-        public double hitStamp = 1;
+        public double hitStamp = -1;
         public double missStamp = -1;
         public double spawnStamp = 1;
 
         public bool missed = false;
-        public bool globalTime = false;
-        public bool editor = false;
 
         public Vector2 position = Vector2.Zero;
         public Vector2 scale = Vector2.One;
@@ -61,11 +57,11 @@ namespace Taipu
         public string measuredText = "";
         public string hitRank = "";
 
+        public String[] keyLink = null;
+
         public Rectangle collRect = new();
 
         public BitmapFont font;
-        public BitmapFont font_outline;
-        public BitmapFont curFont;
         public KeyObject(Vector2 pos,Vector2 scale)
         {
             visible = false;
@@ -73,7 +69,6 @@ namespace Taipu
             this.scale = scale;
             atlasTex = SkinLoader.getTexture("keysq_atlas.png");
             font = SkinLoader.getFont("fonts/main/main.fnt");
-            curFont = font;
             KeyMain = new(atlasTex, new Rectangle(0, 0, 512, 512), position);
             KeyMain.origin = KeyMain.centerOrigin;
 
@@ -92,9 +87,18 @@ namespace Taipu
             if (appearTime > preRingTime) {
                 appearTime = preRingTime;
             }
-            if (SceneManager.currentScene is EditorMode editor)
+            if (SceneManager.currentScene is EditorMode game)
             {
-                keyTime = editor.time - spawnStamp;
+                keyTime = game.time - spawnStamp;
+                appearTime = game.level.appearTime;
+                preRingTime = game.level.preRingTime;
+                ringTime = game.level.ringTime;
+                hitTimeframe = game.level.hitTimeframe;
+                disappearTime = game.level.disappearTime;
+                if (game is EditorMode)
+                {
+                    hitStamp = preRingTime + ringTime;
+                }
             }
             if ((keyTime < preRingTime + ringTime + hitTimeframe + disappearTime) && (keyTime > 0)){
                 visible = true;
@@ -209,7 +213,7 @@ namespace Taipu
                 
 
                 Global.spriteBatch.DrawString(
-                    curFont,
+                    font,
                     keyText,
                     textPosition, 
                     fontColor,
