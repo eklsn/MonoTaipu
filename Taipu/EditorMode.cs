@@ -18,25 +18,30 @@ namespace Taipu
         KeyboardBg keyboard;
         public TaipuLevel level;
         bool paused;
+        Timeline timel = new();
+        UI.Textbox textbox = new(new(532,512),new(500,64));
         public double time => jbox.streamPosition;
         public void Load()
         {
             jbox = new();
             level = new();
+            textbox.bgColor = Color.Black;
+            textbox.bgColor.A = 250;
             if (File.Exists("level.taipu")) {
                 string json = File.ReadAllText("level.taipu");
                 var options = new JsonSerializerOptions { IncludeFields = true };
                 level = (TaipuLevel)JsonSerializer.Deserialize(json, typeof(TaipuLevel), options);
             }
+            
             font = SkinLoader.getFont("fonts/main/main.fnt");
-            jbox.LoadStream("music.mp3");
+            jbox.LoadStream("D:/Taipu/test.mp3");
             jbox.Start(true);
             keyboard = new();
             renderKeys = new();
         }
         public void Update()
         {
-            
+            textbox.Update();
             foreach (String[] key in level.keys) {
                 if (time < double.Parse(key[0])-level.preRingTime-level.ringTime)
                 {
@@ -66,6 +71,11 @@ namespace Taipu
             for (int i = 0; i<=renderKeys.Count-1;i++)
             {
                 KeyObject key = renderKeys[i];
+                if (!level.keys.Contains(key.keyLink))
+                {
+                    renderKeys.RemoveAt(i);
+                    return;
+                }
                 if (((key.keyTime > level.preRingTime + level.ringTime + level.hitTimeframe + level.disappearTime) || (key.keyTime < 0))&&!key.visible)
                 {
                     renderKeys.RemoveAt(i);
@@ -94,7 +104,6 @@ namespace Taipu
                         if (key.visible && key.collRect.Contains(MouseMan.mousePos))
                         {
                             level.keys.Remove(key.keyLink);
-                            renderKeys.Remove(key);
                             break;
 
                         }
@@ -137,11 +146,6 @@ namespace Taipu
             {
                 level.keys.Clear();
                 renderKeys.Clear();
-            }
-
-            if (KeyboardMan.JustPressed(Keys.F10))
-            {
-
             }
 
 
@@ -200,6 +204,8 @@ namespace Taipu
                         SpriteEffects.None,
                         0f
                     );
+            //timel.Draw(level.keys);
+            textbox.Draw();
         }
     }
 }
