@@ -9,12 +9,16 @@ namespace Taipu
         public static MouseState previousMouse;
         public static Vector2 mousePosVirtual;
         public static Vector2 mousePos;
+        public static Vector2 prevMousePosVirtual;
+        public static Vector2 prevMousePos;
+        public static Vector2 lastClickPos;
         public static void Update()
         {
             previousMouse = currentMouse;
             currentMouse = Mouse.GetState();
             mousePosVirtual = new Vector2(currentMouse.X, currentMouse.Y);
             mousePos = Vector2.Transform(mousePosVirtual, Matrix.Invert(MatrixUpscaler.transformationMatrix));
+            
         }
         public static bool RightJustPressed()
         {
@@ -46,6 +50,7 @@ namespace Taipu
         }
         public static bool LeftJustPressed()
         {
+            lastClickPos = mousePos;
             return (currentMouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released);
         }
         public static bool MiddleJustPressed()

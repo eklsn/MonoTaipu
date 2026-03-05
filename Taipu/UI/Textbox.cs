@@ -54,33 +54,48 @@ namespace Taipu.UI
                     textScrolled = true;
                 }
             }
-            if ((KeyboardMan.Down(Keys.Left)) && textCursPos > 0)
+            if (MouseMan.LeftJustPressed())
             {
-                textCursPos -= 1;
-                if (textCursPos < dispLeft)
+                if (rect.Contains(MouseMan.lastClickPos))
                 {
-                    dispLeft-=1;
-                    dispRight -= 1;
-                    textScrolled = true;
-                    while (!sizeCheck())
+                    selected = true;
+                    curOutlineColor = outlineColorSelected;
+                }
+                else
+                {
+                    selected = false;
+                    curOutlineColor = outlineColorUnselected;
+                }
+            }
+            if (selected)
+            {
+                if ((KeyboardMan.Down(Keys.Left)) && textCursPos > 0)
+                {
+                    textCursPos -= 1;
+                    if (textCursPos < dispLeft)
                     {
+                        dispLeft -= 1;
+                        dispRight -= 1;
+                        textScrolled = true;
+                        while (!sizeCheck())
+                        {
+                            dispRight += 1;
+                        }
+                    }
+
+
+                }
+                if (KeyboardMan.Down(Keys.Right) && textCursPos < text.Length)
+                {
+                    textCursPos += 1;
+                    while (textCursPos >= dispRight && dispRight < text.Length)
+                    {
+                        dispLeft += 1;
                         dispRight += 1;
                     }
-                }
-                
-                
-            }
-            if (KeyboardMan.Down(Keys.Right) && textCursPos < text.Length)
-            {
-                textCursPos += 1;
-                while (textCursPos >= dispRight && dispRight<text.Length)
-                {
-                    dispLeft += 1;
-                    dispRight += 1;
-                }
 
+                }
             }
-            
             dispText = text.Substring(dispLeft, dispRight-dispLeft);
             while (sizeCheck())
             {
@@ -104,15 +119,18 @@ namespace Taipu.UI
             Global.spriteBatch.DrawString(
                     font,
                     dispText,
-                    new(textStartMargin+position.X,position.Y+size.Y/2f),
+                    new(textStartMargin + position.X, position.Y + size.Y / 2f),
                     Color.White,
                     0f,
-                    new(0,measureStr.Y/2f),
+                    new(0, measureStr.Y / 2f),
                     textScale,
                     SpriteEffects.None,
                     0f
                 );
-            Global.spriteBatch.DrawLine(position.X + graphCursPos.X, position.Y + size.Y / 2f - (measureStr.Y * textScale / 2f), position.X + graphCursPos.X, position.Y + size.Y / 2f + (measureStr.Y * textScale / 2f), Color.White, thickness: 2f);
+            if (selected)
+            {
+                Global.spriteBatch.DrawLine(position.X + graphCursPos.X, position.Y + size.Y / 2f - (measureStr.Y * textScale / 2f), position.X + graphCursPos.X, position.Y + size.Y / 2f + (measureStr.Y * textScale / 2f), Color.White, thickness: 2f);
             }
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace Taipu
         bool paused;
         String mapPath;
         UI.Textbox textbox = new(new(532,512),new(500,64));
+        UI.Slider timeSlider = new(new(100, 650), new(1000, 16));
         public double time => jbox.streamPosition;
         public void Load()
         {
@@ -57,6 +58,20 @@ namespace Taipu
         }
         public void Update()
         {
+            if (timeSlider.upperRange!=jbox.streamLength)
+            {
+                timeSlider.upperRange = jbox.streamLength;
+            }
+            timeSlider.bottomRange = 0;
+            if (!timeSlider.dragging)
+            {
+                timeSlider.value = time;
+            }
+            else
+            {
+                jbox.Seek(timeSlider.value);
+            }
+            timeSlider.Update();
             keyboard.Update();
             textbox.Update();
             foreach (String[] key in level.keys) {
@@ -206,6 +221,7 @@ namespace Taipu
             
             background?.Draw();
             keyboard.Draw();
+            timeSlider.Draw();
             foreach (KeyObject key in renderKeys)
             {
                 if (key != null)
@@ -263,7 +279,7 @@ namespace Taipu
                         0f
                     );
             //timel.Draw(level.keys);
-            //textbox.Draw();
+            textbox.Draw();
         }
     }
 }
