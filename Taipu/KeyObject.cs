@@ -202,16 +202,10 @@ namespace Taipu
             textPosition = position - scalableShift;
             textOrigin = new(textMeas.X / 2f, textMeas.Y / 2f);
         }
-        public void Draw()
+        public void DrawText()
         {
             if (visible)
             {
-                Blur.Draw();
-                KeyMain.Draw();
-                Outline.Draw();
-                HitRank.Draw();
-                
-
                 Global.spriteBatch.DrawString(
                     font,
                     keyText,

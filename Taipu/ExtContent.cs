@@ -17,6 +17,7 @@ namespace Taipu
             if (!texcache.ContainsKey(path)){
                 using Stream stream = File.OpenRead(path);
                 texcache[path] = Texture2D.FromStream(Global.graphicsDevice, stream);
+
             }
             return texcache[path];
         }

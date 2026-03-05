@@ -30,7 +30,7 @@ namespace Taipu
             base.Initialize();
             Debug.WriteLine(ExtContent.gameFolder);
             Global.graphicsDeviceManager.PreferMultiSampling = true;
-            Global.graphicsDevice.PresentationParameters.MultiSampleCount = 8;
+            Global.graphicsDevice.PresentationParameters.MultiSampleCount = 4;
 
 
         }
@@ -38,12 +38,13 @@ namespace Taipu
         protected override void LoadContent()
         {
             Global.spriteBatch = new SpriteBatch(GraphicsDevice);
-            SceneManager.LoadScene(new EditorMode());
+            
             var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
             MatrixUpscaler.SetVRes(1280, 720);
-            WindowManager.SetResolution(1920, 1080);
+            WindowManager.SetResolution(1920,1080);
             //WindowManager.SetFullscreenBorderless(true);
             MatrixUpscaler.Update(Global.graphicsDevice.Viewport);
+            SceneManager.LoadScene(new EditorMode());
 
         }
 
@@ -56,7 +57,6 @@ namespace Taipu
             SceneManager.currentScene.Update();
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
             
         }
 

@@ -1,43 +1,150 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices.JavaScript;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 namespace Taipu
 {
     public class MapLoader
     {
-        public string mapsRootFolder = "maps";
-        public string curMap = "test";
-        public string mapFolder
+        public string mapFile = "";
+        public string mapFolder = "";
+        public int currentScheme = 0;
+        public string lastError = "0";
+
+        public TaipuMap Load(String filePath)
         {
-            get
+            if (File.Exists(filePath))
             {
-                return Path.Combine(mapsRootFolder, curMap);
+                mapFile = filePath;
+                mapFolder = Path.GetDirectoryName(filePath);
+                string jsonRaw = File.ReadAllText(filePath);
+                TaipuMap level = MapParse(jsonRaw);
+                return level;
+
+            }
+            else
+            {
+                return null;
             }
         }
-        public string mapFolderAbs
+        public TaipuMap MapParse(string jsonRaw)
         {
-            get
+            var docOptions = new JsonDocumentOptions { AllowTrailingCommas = true };
+            var jsonData = JsonDocument.Parse(jsonRaw,docOptions);
+            Dictionary<String,Object> validData = null;
+            bool isValid = false;
+            if (jsonData.RootElement.ValueKind == JsonValueKind.Array)
             {
-                return Path.Combine(ExtContent.gameFolder, mapFolder);
+                JsonArray gdData = JsonNode.Parse(jsonRaw, null, docOptions).AsArray();
+                var mapMeta = gdData[0].AsObject();
+                if (mapMeta.ContainsKey("audiofile"))
+                {
+                    validData = ConvertFromGodot(gdData);
+                    isValid = true;
+                }
+                
+            }
+            if (jsonData.RootElement.ValueKind == JsonValueKind.Object)
+            {
+                JsonObject monoData = JsonNode.Parse(jsonRaw, null, docOptions).AsObject();
+                if (monoData.ContainsKey("audioFile"))
+                {
+                    validData = monoData.Deserialize<Dictionary<String, Object>>();
+                    isValid = true;
+                }
+            }
+            if (isValid)
+            {
+                if (Convert.ToInt32(validData["schemeVersion"].ToString()) < currentScheme)
+                {
+                    validData = ConvertFromOld(validData);
+                }
+                string tempJson = JsonSerializer.Serialize(validData);
+                var options = new JsonSerializerOptions { IncludeFields = true };
+                TaipuMap readyLevel = (TaipuMap)JsonSerializer.Deserialize(tempJson, typeof(TaipuMap), options);
+                return readyLevel;
+            }
+            else
+            {
+                return null;
             }
         }
 
-        public Texture2D getTexture(String path)
+        public Dictionary<String,Object> ConvertFromOld(Dictionary<String,Object> old)
         {
-            return ExtContent.getTexture(Path.Combine(mapFolder, path));
+            // placeholder here :D
+            return old;
         }
-        public BitmapFont getFont(String path)
+
+        public Dictionary<String,Object> ConvertFromGodot(JsonArray array)
         {
-            return ExtContent.getFont(Path.Combine(mapFolder, path));
-        }
-        public String getAbsPath(String path)
-        {
-            return Path.Combine(mapFolderAbs, path);
-        }
-        public String getRelPath(String path)
-        {
-            return Path.Combine(mapFolder, path);
+            // Importing the Godot Prototype Taipu level as monoTaipu scheme 0 level
+            Dictionary<String,Object> convertedMap = new();
+            var mapMeta = array[0].AsObject();
+            var mapKeys = array.Skip(1);
+            foreach (var meta in mapMeta)
+            {
+                switch(meta.Key)
+                {
+                    case "name": convertedMap["songName"] = meta.Value.ToString(); break;
+                    case "song_author": convertedMap["songAuthor"] = meta.Value.ToString(); break;
+                    case "lvl_author": convertedMap["mapAuthor"] = meta.Value.ToString(); break;
+                    case "audiofile": convertedMap["audioFile"] = meta.Value.ToString(); break;
+                    case "videofile": convertedMap["videoFile"] = meta.Value.ToString(); break;
+                    case "znote": convertedMap["editorsNote"] = meta.Value.ToString(); break;
+                    case "z_note": convertedMap["editorsNote"] = meta.Value.ToString(); break;
+                    case "imagefile": convertedMap["imageBg"] = meta.Value.ToString(); break;
+                    case "img_cover": convertedMap["imageCover"] = meta.Value.ToString(); break;
+                    case "pre_ring_time": convertedMap["preRingTime"] = meta.Value.GetValue<Double>(); break;
+                    case "ring_time": convertedMap["ringTime"] = meta.Value.GetValue<Double>(); break;
+                    case "hit_timeframe": convertedMap["hitTimeframe"] = meta.Value.GetValue<Double>(); break;
+                    case "minus_hp_idle": convertedMap["minusHPIdle"] = meta.Value.GetValue<Double>(); break;
+                    case "minus_hp_on_miss": convertedMap["minusHPMiss"] = meta.Value.GetValue<Double>(); break;
+                }
+            }
+            if (!convertedMap.ContainsKey("ringTime"))
+            {
+                convertedMap["ringTime"] = 0.5;
+                convertedMap["preRingTime"] = 0.2;
+                convertedMap["hitTimeframe"] = 0.2;
+            }
+            if (!convertedMap.ContainsKey("minusHPIdle"))
+            {
+                convertedMap["minusHPIdle"] = 0.001;
+                convertedMap["minusHPMiss"] = 25;
+            }
+            if (!convertedMap.ContainsKey("mapAuthor"))
+            {
+                convertedMap["mapAuthor"] = "Unknown Mapper";
+            }
+            if (!convertedMap.ContainsKey("songName"))
+            {
+                convertedMap["songName"] = "Untitled";
+            }
+            if (!convertedMap.ContainsKey("songAuthor"))
+            {
+                convertedMap["songAuthor"] = "Unknown Author";
+            }
+            convertedMap["appearTime"] = convertedMap["preRingTime"];
+            convertedMap["disappearTime"] = 0.5;
+            convertedMap["schemeVersion"] = 0;
+            List<String[]> newKeys = new();
+            foreach (var key in mapKeys)
+            {
+                String[] keyData = new string[2];
+                keyData[0] = key[0].GetValue<double>().ToString();
+                keyData[1] = key[1].ToString();
+                newKeys.Add(keyData);
+            }
+            convertedMap["keys"] = newKeys;
+            return convertedMap;
         }
     }
 }
