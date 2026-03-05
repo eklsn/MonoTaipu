@@ -12,6 +12,8 @@ namespace Taipu
         public Metronome metronome = null;
         public double streamPosition => Bass.ChannelBytes2Seconds(tempoStream, Bass.ChannelGetPosition(tempoStream));
         public long streamPositionBytes => Bass.ChannelGetPosition(tempoStream);
+        public long streamLengthBytes => Bass.ChannelGetLength(tempoStream);
+        public double streamLength => Bass.ChannelBytes2Seconds(tempoStream,Bass.ChannelGetLength(tempoStream));
         public ManagedBass.PlaybackState state => Bass.ChannelIsActive(tempoStream);
         public void LoadStream(String path)
         {
