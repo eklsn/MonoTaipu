@@ -9,7 +9,6 @@ namespace Taipu
         public static MouseState previousMouse;
         public static Vector2 mousePosVirtual;
         public static Vector2 mousePos;
-        //MouseSta
         public static void Update()
         {
             previousMouse = currentMouse;

@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 
 namespace Taipu
 {
@@ -21,6 +23,7 @@ namespace Taipu
         public Vector2 spacing = new(100);
         public Vector2 scale = new(0.175f);
         public Vector2 position = new(175, 240);
+        public EditorMode editor = null;
         public KeyboardBg()
         {
             outlineTex = SkinLoader.getTexture("keysq_atlas.png");
@@ -50,7 +53,22 @@ namespace Taipu
         {
             return keyArr[key].position;
         }
-        //public void Update() { }
+        public void Update()
+        {
+            if (editor != null)
+            {
+                if (MouseMan.LeftJustPressed())
+                {
+                    foreach (var key in keyArr)
+                    {
+                        if (key.Value.rect.Contains(MouseMan.mousePos))
+                        {
+                            editor.CreateKey(key.Key);
+                        }
+                    }
+                }
+            }
+        }
         public void Draw()
         {
             foreach (var key in keyArr)

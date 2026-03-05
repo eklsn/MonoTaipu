@@ -13,12 +13,14 @@ namespace Taipu
     public class EditorMode : Scene
     {
         List<KeyObject> renderKeys;
+        Sprite background;
+        Texture2D bgTex;
         JukeboxSynced jbox;
         BitmapFont font;
         KeyboardBg keyboard;
-        public TaipuLevel level;
+        public TaipuMap level;
         bool paused;
-        Timeline timel = new();
+        String mapPath;
         UI.Textbox textbox = new(new(532,512),new(500,64));
         public double time => jbox.streamPosition;
         public void Load()
@@ -27,20 +29,35 @@ namespace Taipu
             level = new();
             textbox.bgColor = Color.Black;
             textbox.bgColor.A = 250;
-            if (File.Exists("level.taipu")) {
-                string json = File.ReadAllText("level.taipu");
-                var options = new JsonSerializerOptions { IncludeFields = true };
-                level = (TaipuLevel)JsonSerializer.Deserialize(json, typeof(TaipuLevel), options);
-            }
-            
+            mapPath = "level.taipu";
+            MapLoader loader = new();
             font = SkinLoader.getFont("fonts/main/main.fnt");
-            jbox.LoadStream("D:/Taipu/test.mp3");
-            jbox.Start(true);
+            if (File.Exists(mapPath))
+            {
+                level = loader.Load(mapPath);
+                
+                if (File.Exists(Path.Combine(loader.mapFolder, level.imageBg)))
+                {
+                    bgTex = ExtContent.getTexture(Path.Combine(loader.mapFolder, level.imageBg));
+                    background = new(bgTex, Vector2.Zero);
+                    background.color.A = (byte)90f;
+                    background.origin = background.centerOrigin;
+                    background.position = MatrixUpscaler.virtualResolution / 2f;
+                    background.scale = new Vector2(MatrixUpscaler.virtualResolution.X / background.size.X);
+                }
+                if (File.Exists(Path.Combine(loader.mapFolder, level.audioFile)))
+                {
+                    jbox.LoadStream(Path.Combine(loader.mapFolder, level.audioFile));
+                    jbox.Start(true);
+                }
+            }
             keyboard = new();
+            keyboard.editor = this;
             renderKeys = new();
         }
         public void Update()
         {
+            keyboard.Update();
             textbox.Update();
             foreach (String[] key in level.keys) {
                 if (time < double.Parse(key[0])-level.preRingTime-level.ringTime)
@@ -125,9 +142,10 @@ namespace Taipu
 
             if (KeyboardMan.JustPressed(Keys.F10))
             {
-                var options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
-                string json = JsonSerializer.Serialize(level, typeof(TaipuLevel), options);
-                File.WriteAllText("level.taipu", json);
+                var options = new JsonSerializerOptions { IncludeFields = true };
+                string json = JsonSerializer.Serialize(level, typeof(TaipuMap), options);
+                File.Copy(mapPath, mapPath + ".bak");
+                File.WriteAllText(mapPath, json);
             }
 
             if (KeyboardMan.JustPressed(Keys.Home))
@@ -164,13 +182,7 @@ namespace Taipu
                     }
                     if (keypressed != '\0')
                     {
-                        String[] arrtemp = [time.ToString(), keypressed.ToString()];
-                        int insPos = 0;
-                        while (insPos < level.keys.Count && double.Parse(level.keys[insPos][0])<time)
-                        {
-                            insPos++;
-                        }
-                        level.keys.Insert(insPos, arrtemp);
+                        CreateKey(keypressed);
 
                     }
                 }
@@ -179,8 +191,20 @@ namespace Taipu
 
         }
 
+        public void CreateKey(char keypressed)
+        {
+            String[] arrtemp = [Math.Round(time, 3).ToString(), keypressed.ToString()];
+            int insPos = 0;
+            while (insPos < level.keys.Count && double.Parse(level.keys[insPos][0]) < time)
+            {
+                insPos++;
+            }
+            level.keys.Insert(insPos, arrtemp);
+        }
         public void Draw()
         {
+            
+            background?.Draw();
             keyboard.Draw();
             foreach (KeyObject key in renderKeys)
             {
@@ -188,14 +212,48 @@ namespace Taipu
                 {
                     if (key.visible)
                     {
-                        key.Draw();
+                        key.Blur.Draw();
                     }
                 }
                 
             }
+            foreach (KeyObject key in renderKeys)
+            {
+                if (key != null)
+                {
+                    if (key.visible)
+                    {
+                        key.KeyMain.Draw();
+                        key.DrawText();
+                    }
+                }
+
+            }
+            foreach (KeyObject key in renderKeys)
+            {
+                if (key != null)
+                {
+                    if (key.visible)
+                    {
+                        key.Outline.Draw();
+                    }
+                }
+
+            }
+            foreach (KeyObject key in renderKeys)
+            {
+                if (key != null)
+                {
+                    if (key.visible)
+                    {
+                        key.HitRank.Draw();
+                    }
+                }
+
+            }
             Global.spriteBatch.DrawString(
                         font,
-                        time.ToString() + "\n" + paused.ToString(),
+                        Math.Round(time,3).ToString() + "\n" + paused.ToString(),
                         Vector2.Zero,
                         Color.White,
                         0f,
@@ -205,7 +263,7 @@ namespace Taipu
                         0f
                     );
             //timel.Draw(level.keys);
-            textbox.Draw();
+            //textbox.Draw();
         }
     }
 }

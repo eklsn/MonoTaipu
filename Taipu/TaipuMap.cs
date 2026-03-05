@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Taipu
 {
-    public class TaipuLevel
+    public class TaipuMap
     {
         public String songName = "Untitled";
         public String songAuthor = "Unnamed";
@@ -26,8 +26,11 @@ namespace Taipu
         public string imageCover = "";
         public bool videoOnly = false;
 
-        public double minusHPPerMs = 0.01;
-        public double minusHPPerMiss = 0;
+        public double minusHPIdle = 0.01;
+        public double minusHPMiss = 0;
+        public String editorsNote = "";
+
+        public double schemeVersion = 0;
 
         public List<String[]> keys = new();
     }

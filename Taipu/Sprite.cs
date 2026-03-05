@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 
 namespace Taipu
 {
@@ -26,6 +27,7 @@ namespace Taipu
         public Vector2 scaledSize => size * scale;
         public Color color = Color.White;
         public bool visible = true;
+        public RectangleF rect => new RectangleF(position-scaledOrigin,scaledSize);
         public Sprite(Texture2D texture, Vector2 position)
         {
             this.texture = texture;
