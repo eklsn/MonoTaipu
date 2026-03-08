@@ -19,6 +19,7 @@ namespace Taipu
             mousePosVirtual = new Vector2(currentMouse.X, currentMouse.Y);
             mousePos = Vector2.Transform(mousePosVirtual, Matrix.Invert(MatrixUpscaler.transformationMatrix));
             
+            
         }
         public static bool RightJustPressed()
         {
@@ -56,6 +57,27 @@ namespace Taipu
         public static bool MiddleJustPressed()
         {
             return (currentMouse.MiddleButton == ButtonState.Pressed && previousMouse.MiddleButton == ButtonState.Released);
+        }
+        public static bool LeftJustReleased()
+        {
+            lastClickPos = mousePos;
+            return (currentMouse.LeftButton == ButtonState.Released && previousMouse.LeftButton == ButtonState.Pressed);
+        }
+        public static bool MiddleJustReleased()
+        {
+            return (currentMouse.MiddleButton == ButtonState.Released && previousMouse.LeftButton == ButtonState.Pressed);
+        }
+        public static bool RightJustReleased()
+        {
+            return (currentMouse.RightButton == ButtonState.Released && previousMouse.LeftButton == ButtonState.Pressed);
+        }
+        public static bool MWheelUp()
+        {
+            return (currentMouse.ScrollWheelValue > previousMouse.ScrollWheelValue);
+        }
+        public static bool MWheelDown()
+        {
+            return (currentMouse.ScrollWheelValue < previousMouse.ScrollWheelValue);
         }
     }
 }

@@ -11,10 +11,8 @@ using System.Threading.Tasks;
 
 namespace Taipu.UI
 {
-    public class Slider
+    public class Slider : Element
     {
-        public Vector2 size;
-        public Vector2 position;
         public Color sliderBgColor = Color.Gray;
         public Color sliderOutColor = Color.Transparent;
         public Texture2D sliderPointTex;
@@ -32,15 +30,16 @@ namespace Taipu.UI
 
         public Slider(Vector2 position, Vector2 size)
         {
-            this.position = position;
+            
             this.size = size;
             sliderPointTex = SkinLoader.getTexture("keysq_main.png");
-            sliderPoint = new(sliderPointTex,new Vector2(position.X, position.Y+size.Y / 2f));
+            sliderPoint = new(sliderPointTex,new Vector2(localPosition.X, localPosition.Y+size.Y / 2f));
             sliderPoint.origin = sliderPoint.centerOrigin;
             pointScaleCurrent = pointScaleUndrag;
+            this.localPosition = position;
             sliderPoint.scale = new Vector2(pointScaleCurrent);
         }
-        public void Update()
+        protected override void OnUpdate(GameTime gameTime)
         {
             if ((valueLinear != prevValueLinear) && (value==prevValue))
             {
@@ -50,9 +49,9 @@ namespace Taipu.UI
             {
                 valueLinear = (value - bottomRange) / upperRange-bottomRange;
             }
-                if (MouseMan.LeftDown() && !dragging)
+                if (MouseMan.LeftJustPressed() && !dragging)
             {
-                if (sliderPoint.rect.Contains(MouseMan.mousePos) || new RectangleF(position, size).Contains(MouseMan.mousePos))
+                if (sliderPoint.rect.Contains(MouseMan.mousePos) || absoluteRect.Contains(MouseMan.mousePos))
                 {
                     dragging = true;
                     pointScaleCurrent = pointScaleDrag;
@@ -66,19 +65,19 @@ namespace Taipu.UI
             if(dragging)
             {
                 
-                valueLinear = Math.Clamp(((MouseMan.mousePos.X - position.X) / size.X), 0, 1);
+                valueLinear = Math.Clamp(((MouseMan.mousePos.X - absolutePosition.X) / scaledSize.X), 0, 1);
                 value = bottomRange + (valueLinear * (upperRange-bottomRange));
             }
-            sliderPoint.scale = Vector2.Lerp(sliderPoint.scale,new Vector2(pointScaleCurrent),0.2f);
-            sliderPoint.position.X = float.Lerp(sliderPoint.position.X, (float)(position.X+(valueLinear * size.X)), 0.4f);
-            
+            sliderPoint.scale = Vector2.Lerp(sliderPoint.scale,new Vector2(pointScaleCurrent) * absoluteScale, 0.2f);
+            sliderPoint.position.X = float.Lerp(sliderPoint.position.X, (float)(absolutePosition.X+(valueLinear * scaledSize.X)), 0.4f);
+            sliderPoint.position.Y = absolutePosition.Y + (size.Y / 2f);
             prevValue = value;
             prevValueLinear = valueLinear;
         }
-        public void Draw()
+        protected override void OnDraw(SpriteBatch spriteBatch)
         {
-            Global.spriteBatch.FillRectangle(new RectangleF(position, size), sliderBgColor);
-            Global.spriteBatch.DrawRectangle(new RectangleF(position, size), sliderOutColor);
+            Global.spriteBatch.FillRectangle(absoluteRect, sliderBgColor);
+            Global.spriteBatch.DrawRectangle(absoluteRect, sliderOutColor);
             sliderPoint.Draw();
         }
     }

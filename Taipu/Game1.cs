@@ -1,9 +1,10 @@
-﻿using ManagedBass;
+﻿
+using ManagedBass;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Myra;
 using System.Diagnostics;
-
 namespace Taipu
 {
     public class Game1 : Game
@@ -15,6 +16,7 @@ namespace Taipu
             Debug.WriteLine("Version b01m");
             Global.graphicsDeviceManager = new GraphicsDeviceManager(this);
             Global.contentManager = Content;
+            Global.game = this;
             Global.contentManager.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -22,9 +24,7 @@ namespace Taipu
         protected override void Initialize()
         {
             Bass.Init();
-
-
-
+            MyraEnvironment.Game = this;
             Global.graphicsDevice = GraphicsDevice;
             Global.window = Window;
             base.Initialize();
@@ -44,7 +44,7 @@ namespace Taipu
             WindowManager.SetResolution(1920,1080);
             //WindowManager.SetFullscreenBorderless(true);
             MatrixUpscaler.Update(Global.graphicsDevice.Viewport);
-            SceneManager.LoadScene(new EditorMode());
+            SceneManager.LoadScene(new Editor.EditorScene(null));
 
         }
 
@@ -55,8 +55,6 @@ namespace Taipu
             KeyboardMan.Update();
             base.Update(gameTime);
             SceneManager.currentScene.Update();
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
             
         }
 
