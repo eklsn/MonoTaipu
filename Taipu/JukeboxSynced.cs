@@ -9,7 +9,6 @@ namespace Taipu
     {
         public int musicStream;
         public int tempoStream;
-        public Metronome metronome = null;
         public double streamPosition => Bass.ChannelBytes2Seconds(tempoStream, Bass.ChannelGetPosition(tempoStream));
         public long streamPositionBytes => Bass.ChannelGetPosition(tempoStream);
         public long streamLengthBytes => Bass.ChannelGetLength(tempoStream);
@@ -34,14 +33,12 @@ namespace Taipu
         }
         public void Start(bool restart) {
             Bass.ChannelPlay(tempoStream, restart);
-            metronome?.CalculateBeat(streamPositionBytes);
         }
 
         public void Stop() => Bass.ChannelStop(tempoStream);
         public void Seek(double secondsPosition)
         {
             Bass.ChannelSetPosition(tempoStream, Bass.ChannelSeconds2Bytes(tempoStream,secondsPosition));
-            metronome?.CalculateBeat(streamPositionBytes);
         }
     }
 }

@@ -34,6 +34,7 @@ namespace Taipu.UI
         public Vector2 measureStr;
         public Textbox(Vector2 position,Vector2 size)
         {
+            
             this.size = size;
             this.position = position;
             font = SkinLoader.getFont("fonts/main/main.fnt");
@@ -41,7 +42,7 @@ namespace Taipu.UI
             dispText = text;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             if (textCursPos == -1)
             {
@@ -112,7 +113,7 @@ namespace Taipu.UI
             measureStr = font.MeasureString(dispText);
             return (textStartMargin + (measureStr.X*textScale) > size.X-textStartMargin);
         }
-        public void Draw()
+        public void Draw(SpriteBatch spriteBatch)
         {
             Global.spriteBatch.FillRectangle(rect, bgColor);
             Global.spriteBatch.DrawRectangle(position, size, curOutlineColor, thickness: borderThickness);

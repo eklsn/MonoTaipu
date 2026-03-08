@@ -31,13 +31,21 @@ namespace Taipu
             }
             else
             {
-                return null;
+                return new();
             }
         }
         public TaipuMap MapParse(string jsonRaw)
         {
             var docOptions = new JsonDocumentOptions { AllowTrailingCommas = true };
-            var jsonData = JsonDocument.Parse(jsonRaw,docOptions);
+            JsonDocument jsonData = null;
+            try
+            {
+                jsonData = JsonDocument.Parse(jsonRaw, docOptions);
+            }
+            catch
+            {
+                return new();
+            }
             Dictionary<String,Object> validData = null;
             bool isValid = false;
             if (jsonData.RootElement.ValueKind == JsonValueKind.Array)

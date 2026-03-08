@@ -5,81 +5,61 @@ using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Text;
 using System.Text.Json;
-
-
-namespace Taipu
+using System.Threading.Tasks;
+using MonoGame.Extended;
+namespace Taipu.Editor.Tabs
 {
-    public class EditorMode : Scene
+    public class Main
     {
-        List<KeyObject> renderKeys;
-        Sprite background;
-        Texture2D bgTex;
-        JukeboxSynced jbox;
-        BitmapFont font;
+        Editor.EditorScene root = null;
+        Editor.EditorScene.EditorTabs me = Editor.EditorScene.EditorTabs.Main;
+        public List<KeyObject> renderKeys;
+        public Sprite background;
+        public Texture2D bgTex;
+        BitmapFont font; 
         KeyboardBg keyboard;
-        public TaipuMap level;
-        bool paused;
-        String mapPath;
-        UI.Textbox textbox = new(new(532,512),new(500,64));
-        UI.Slider timeSlider = new(new(100, 650), new(1000, 16));
-        public double time => jbox.streamPosition;
-        public void Load()
+        UI.Textbox textbox = new(new(532, 512), new(500, 64));
+        Editor.bottomBar bottomBar = new();
+        public float scrollFactor = 1.0f;
+        public Main(Editor.EditorScene root)
         {
-            jbox = new();
-            level = new();
-            textbox.bgColor = Color.Black;
-            textbox.bgColor.A = 250;
-            mapPath = "level.taipu";
-            MapLoader loader = new();
-            font = SkinLoader.getFont("fonts/main/main.fnt");
-            if (File.Exists(mapPath))
-            {
-                level = loader.Load(mapPath);
-                
-                if (File.Exists(Path.Combine(loader.mapFolder, level.imageBg)))
-                {
-                    bgTex = ExtContent.getTexture(Path.Combine(loader.mapFolder, level.imageBg));
-                    background = new(bgTex, Vector2.Zero);
-                    background.color.A = (byte)90f;
-                    background.origin = background.centerOrigin;
-                    background.position = MatrixUpscaler.virtualResolution / 2f;
-                    background.scale = new Vector2(MatrixUpscaler.virtualResolution.X / background.size.X);
-                }
-                if (File.Exists(Path.Combine(loader.mapFolder, level.audioFile)))
-                {
-                    jbox.LoadStream(Path.Combine(loader.mapFolder, level.audioFile));
-                    jbox.Start(true);
-                }
-            }
+            this.root = root;
             keyboard = new();
-            keyboard.editor = this;
+            //keyboard.editor = this;
             renderKeys = new();
+            bottomBar.localPosition = new Vector2(0, 0);
         }
-        public void Update()
+        public void Update(GameTime gameTime) 
         {
-            if (timeSlider.upperRange!=jbox.streamLength)
+            if (root?.currentTab == me)
+            bottomBar.localPosition = Vector2.Lerp(bottomBar.localPosition, Vector2.Zero, 0.1f);
+            bottomBar.Update(Global.gameTime);
+            if (bottomBar.timeSlider.upperRange != root.music.streamLength)
             {
-                timeSlider.upperRange = jbox.streamLength;
+                bottomBar.timeSlider.upperRange = root.music.streamLength;
             }
-            timeSlider.bottomRange = 0;
-            if (!timeSlider.dragging)
+            bottomBar.timeSlider.bottomRange = 0;
+            if (!bottomBar.timeSlider.dragging)
             {
-                timeSlider.value = time;
+                bottomBar.timeSlider.value = root.time;
             }
             else
             {
-                jbox.Seek(timeSlider.value);
+                root.music.Seek(bottomBar.timeSlider.value);
             }
-            timeSlider.Update();
             keyboard.Update();
-            textbox.Update();
-            foreach (String[] key in level.keys) {
-                if (time < double.Parse(key[0])-level.preRingTime-level.ringTime)
+            textbox.Update(gameTime);
+            foreach (String[] key in root.level.keys)
+            {
+                if (root.time < double.Parse(key[0]) - root.level.preRingTime - root.level.ringTime)
                 {
                     break;
                 }
-                if ((time > double.Parse(key[0]) - level.preRingTime - level.ringTime) && (time < double.Parse(key[0])+level.hitTimeframe+level.disappearTime))
+                if ((root.time > double.Parse(key[0]) - root.level.preRingTime - root.level.ringTime) && (root.time < double.Parse(key[0]) + root.level.hitTimeframe + root.level.disappearTime))
                 {
                     bool foundFlag = false;
                     foreach (KeyObject renderKey in renderKeys)
@@ -95,20 +75,20 @@ namespace Taipu
                         KeyObject tempKey = new(keyboard.getPosition(char.Parse(key[1])), keyboard.scale);
                         tempKey.keyLink = key;
                         tempKey.keyText = key[1].ToString();
-                        tempKey.spawnStamp = double.Parse(key[0]) - level.preRingTime - level.ringTime;
+                        tempKey.spawnStamp = double.Parse(key[0]) - root.level.preRingTime - root.level.ringTime;
                         renderKeys.Add(tempKey);
                     }
                 }
             }
-            for (int i = 0; i<=renderKeys.Count-1;i++)
+            for (int i = 0; i <= renderKeys.Count - 1; i++)
             {
                 KeyObject key = renderKeys[i];
-                if (!level.keys.Contains(key.keyLink))
+                if (!root.level.keys.Contains(key.keyLink))
                 {
                     renderKeys.RemoveAt(i);
                     return;
                 }
-                if (((key.keyTime > level.preRingTime + level.ringTime + level.hitTimeframe + level.disappearTime) || (key.keyTime < 0))&&!key.visible)
+                if (((key.keyTime > root.level.preRingTime + root.level.ringTime + root.level.hitTimeframe + root.level.disappearTime) || (key.keyTime < 0)) && !key.visible)
                 {
                     renderKeys.RemoveAt(i);
                 }
@@ -117,15 +97,24 @@ namespace Taipu
                     key?.Update();
                 }
             }
-            if (jbox.state == ManagedBass.PlaybackState.Playing)
+            if (root.music.state == ManagedBass.PlaybackState.Playing)
             {
-                paused = false;
+                root.paused = false;
+                if (!bottomBar.pauseBtn.JustToggled())
+                {
+                    bottomBar.pauseBtn.SetToggle(false);
+                }
+
             }
             else
             {
-                paused = true;
+                root.paused = true;
+                if (!bottomBar.pauseBtn.JustToggled())
+                {
+                    bottomBar.pauseBtn.SetToggle(true);
+                }
             }
-            
+
 
             if (MouseMan.RightJustPressed())
             {
@@ -135,7 +124,7 @@ namespace Taipu
                     {
                         if (key.visible && key.collRect.Contains(MouseMan.mousePos))
                         {
-                            level.keys.Remove(key.keyLink);
+                            root.level.keys.Remove(key.keyLink);
                             break;
 
                         }
@@ -143,45 +132,66 @@ namespace Taipu
                 }
             }
 
-            if (KeyboardMan.JustPressed(Keys.Space))
+            if (KeyboardMan.JustPressed(Keys.Space) || bottomBar.pauseBtn.JustToggled())
             {
-                if (jbox.state == ManagedBass.PlaybackState.Playing)
+                if (root.music.state == ManagedBass.PlaybackState.Playing)
                 {
-                    jbox.Stop();
+                    root.music.Stop();
                 }
                 else
                 {
-                    jbox.Start(false);
+                    root.music.Start(false);
                 }
             }
 
             if (KeyboardMan.JustPressed(Keys.F10))
             {
                 var options = new JsonSerializerOptions { IncludeFields = true };
-                string json = JsonSerializer.Serialize(level, typeof(TaipuMap), options);
-                File.Copy(mapPath, mapPath + ".bak");
-                File.WriteAllText(mapPath, json);
+                string json = JsonSerializer.Serialize(root.level, typeof(TaipuMap), options);
+                File.Copy(root.mapPath, root.mapPath + ".bak");
+                File.WriteAllText(root.mapPath, json);
             }
 
             if (KeyboardMan.JustPressed(Keys.Home))
             {
-                jbox.Start(true);
+                root.music.Start(true);
             }
-            if (KeyboardMan.Down(Keys.Left))
+            if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.Down(Keys.LeftControl))
             {
-                jbox.Seek(jbox.streamPosition - 0.05);
+                scrollFactor = 16.0f;
             }
-            if (KeyboardMan.Down(Keys.Right))
+            else if (KeyboardMan.Down(Keys.LeftShift))
             {
-                jbox.Seek(jbox.streamPosition + 0.05);
+                scrollFactor = 8.0f;
             }
+            else if (KeyboardMan.Down(Keys.LeftControl))
+            {
+                scrollFactor = 0.5f;
+            }
+            else
+            {
+                scrollFactor = 1.0f;
+            }
+            if (MouseMan.MWheelUp() || MouseMan.MWheelDown())
+            {
+                scrollFactor = scrollFactor * 2;
+            }
+            if (KeyboardMan.Down(Keys.Left) || MouseMan.MWheelUp())
+            {
+                root.music.Seek(root.music.streamPosition - (0.05 * scrollFactor));
+            }
+            if (KeyboardMan.Down(Keys.Right) || MouseMan.MWheelDown())
+            {
+                root.music.Seek(root.music.streamPosition + (0.05 * scrollFactor));
+            }
+
             if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.JustPressed(Keys.Delete))
             {
-                level.keys.Clear();
+                root.level.keys.Clear();
                 renderKeys.Clear();
             }
 
-
+            bottomBar.timerText = TimeSpan.FromSeconds(root.time).ToString(@"mm\:ss\.ff");
             foreach (Keys key in KeyboardMan.currentKeyboard.GetPressedKeys())
             {
                 char keypressed = '\0';
@@ -197,7 +207,7 @@ namespace Taipu
                     }
                     if (keypressed != '\0')
                     {
-                        CreateKey(keypressed);
+                        root.CreateKey(keypressed);
 
                     }
                 }
@@ -205,23 +215,11 @@ namespace Taipu
             }
 
         }
-
-        public void CreateKey(char keypressed)
+        public void Draw(SpriteBatch spriteBatch) 
         {
-            String[] arrtemp = [Math.Round(time, 3).ToString(), keypressed.ToString()];
-            int insPos = 0;
-            while (insPos < level.keys.Count && double.Parse(level.keys[insPos][0]) < time)
-            {
-                insPos++;
-            }
-            level.keys.Insert(insPos, arrtemp);
-        }
-        public void Draw()
-        {
-            
             background?.Draw();
+            bottomBar.Draw(Global.spriteBatch);
             keyboard.Draw();
-            timeSlider.Draw();
             foreach (KeyObject key in renderKeys)
             {
                 if (key != null)
@@ -231,7 +229,7 @@ namespace Taipu
                         key.Blur.Draw();
                     }
                 }
-                
+
             }
             foreach (KeyObject key in renderKeys)
             {
@@ -267,19 +265,9 @@ namespace Taipu
                 }
 
             }
-            Global.spriteBatch.DrawString(
-                        font,
-                        Math.Round(time,3).ToString() + "\n" + paused.ToString(),
-                        Vector2.Zero,
-                        Color.White,
-                        0f,
-                        Vector2.Zero,
-                        0.25f,
-                        SpriteEffects.None,
-                        0f
-                    );
+
             //timel.Draw(level.keys);
-            textbox.Draw();
+            //textbox.Draw();
         }
     }
 }

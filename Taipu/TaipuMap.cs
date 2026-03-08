@@ -20,10 +20,10 @@ namespace Taipu
         public double disappearTime = 0.5;
         public double previewTime = 0;
 
-        public String audioFile = "";
-        public String videoFile = "";
-        public String imageBg = "";
-        public string imageCover = "";
+        public String audioFile = "Audio file here...";
+        public String videoFile = "Video file here...";
+        public String imageBg = "BG image here...";
+        public string imageCover = "Cover image here...";
         public bool videoOnly = false;
 
         public double minusHPIdle = 0.01;

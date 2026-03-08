@@ -87,7 +87,7 @@ namespace Taipu
             if (appearTime > preRingTime) {
                 appearTime = preRingTime;
             }
-            if (SceneManager.currentScene is EditorMode game)
+            if (SceneManager.currentScene is Editor.EditorScene game)
             {
                 keyTime = game.time - spawnStamp;
                 appearTime = game.level.appearTime;
@@ -95,7 +95,7 @@ namespace Taipu
                 ringTime = game.level.ringTime;
                 hitTimeframe = game.level.hitTimeframe;
                 disappearTime = game.level.disappearTime;
-                if (game is EditorMode)
+                if (game is Editor.EditorScene)
                 {
                     hitStamp = preRingTime + ringTime;
                 }
