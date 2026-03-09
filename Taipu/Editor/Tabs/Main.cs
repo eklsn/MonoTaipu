@@ -34,7 +34,7 @@ namespace Taipu.Editor.Tabs
         public void Update(GameTime gameTime) 
         {
             if (root?.currentTab == me)
-            bottomBar.localPosition = Vector2.Lerp(bottomBar.localPosition, Vector2.Zero, 0.1f);
+            bottomBar.localPosition = Vector2.Lerp(bottomBar.localPosition, Vector2.Zero, 8f * (float)Global.deltaTime);
             bottomBar.Update(Global.gameTime);
             if (bottomBar.timeSlider.upperRange != root.music.streamLength)
             {
