@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ManagedBass;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
+using NativeFileDialogSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeFileDialogSharp;
-using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
 
 namespace Taipu.Editor
 {
@@ -20,14 +21,14 @@ namespace Taipu.Editor
             None,
             MetaEditor = 1,
             Main = 2,
-            Rhythm = 3,
+            Audio = 3,
             Export = 4,
         }
         public EditorTabs currentTab = EditorTabs.None;
         public Editor.Tabs.Main mainTab;
         public Editor.Tabs.MetaEditor metaTab;
         public Editor.Tabs.Export exportTab;
-        public Editor.Tabs.Rhythm rhythmTab;
+        public Editor.Tabs.Audio audioTab;
 
         public JukeboxSynced music;
         public TaipuMap level;
@@ -53,14 +54,14 @@ namespace Taipu.Editor
             mainTab = new(this);
             metaTab = new(this);
             exportTab = new(this);
-            rhythmTab = new(this);
+            audioTab = new(this);
             this.mapPath = mapPath;
             loader = new();
             music = new();
             level = loader.Load(mapPath);
             LoadAudio();
             LoadBackground();
-            // load everything first, then display the UI
+            
             while (level == null) { }
 
             currentTab = EditorTabs.Main;
@@ -96,13 +97,17 @@ namespace Taipu.Editor
             {
                 currentTab = EditorTabs.Main;
             }
+            if (KeyboardMan.JustPressed(Keys.F3))
+            {
+                currentTab = EditorTabs.Audio;
+            }
             switch (currentTab)
             {
                 
                 case EditorTabs.Main:
                     mainTab.Update(Global.gameTime); return;
-                case EditorTabs.Rhythm:
-                    rhythmTab.Update(Global.gameTime); return;
+                case EditorTabs.Audio:
+                    audioTab.Update(Global.gameTime); return;
                 case EditorTabs.Export:
                     exportTab.Update(Global.gameTime); return;
                 case EditorTabs.MetaEditor:
@@ -126,8 +131,8 @@ namespace Taipu.Editor
             switch (currentTab) {
                 case EditorTabs.Main:
                     mainTab.Draw(Global.spriteBatch); return;
-                case EditorTabs.Rhythm:
-                    rhythmTab.Draw(Global.spriteBatch); return;
+                case EditorTabs.Audio:
+                    audioTab.Draw(Global.spriteBatch); return;
                 case EditorTabs.Export:
                     exportTab.Draw(Global.spriteBatch); return;
                 case EditorTabs.MetaEditor:

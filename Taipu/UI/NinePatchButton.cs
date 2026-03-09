@@ -51,7 +51,7 @@ namespace Taipu.UI
             {
                 textScale -= new Vector2(0.01f);
             }
-            if (MouseMan.LeftDown() && btnSpr.rect.Contains(MouseMan.mousePos))
+            if (MouseMan.LeftJustPressed() && btnSpr.rect.Contains(MouseMan.mousePos))
             {
                 overMouseDown = true;
             }

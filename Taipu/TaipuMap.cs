@@ -19,6 +19,8 @@ namespace Taipu
         public double hitTimeframe = 0;
         public double disappearTime = 0.5;
         public double previewTime = 0;
+        public double beatOffset = 0;
+        public double bpm = 0;
 
         public String audioFile = "Audio file here...";
         public String videoFile = "Video file here...";

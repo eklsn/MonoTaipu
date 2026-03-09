@@ -15,7 +15,14 @@ namespace Taipu
         public static void Update()
         {
             previousMouse = currentMouse;
-            currentMouse = Mouse.GetState();
+            if (Global.game.IsActive)
+            {
+                currentMouse = Mouse.GetState();
+            }
+            else
+            {
+                currentMouse = previousMouse;
+            }
             mousePosVirtual = new Vector2(currentMouse.X, currentMouse.Y);
             mousePos = Vector2.Transform(mousePosVirtual, Matrix.Invert(MatrixUpscaler.transformationMatrix));
             

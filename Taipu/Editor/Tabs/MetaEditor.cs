@@ -73,24 +73,29 @@ namespace Taipu.Editor.Tabs
             bgImageImportButton.text = root.level.imageBg;
 
             bool isActive = root.currentTab == Editor.EditorScene.EditorTabs.MetaEditor;
-            desktop.FocusedKeyboardWidget = isActive ? desktop.FocusedKeyboardWidget : null;
+            if (!isActive)
+            {
+                desktop.FocusedKeyboardWidget = null;
+            }
+            else
+            {
+                SyncTextBox(songName, ref root.level.songName);
+                SyncTextBox(songAuthor, ref root.level.songAuthor);
+                SyncTextBox(mapAuthor, ref root.level.mapAuthor);
+                SyncTextBox(keyAppear, ref root.level.appearTime);
+                SyncTextBox(preRing, ref root.level.preRingTime);
+                SyncTextBox(ring, ref root.level.ringTime);
+                SyncTextBox(hitTimeframe, ref root.level.hitTimeframe);
+                SyncTextBox(keyDisappear, ref root.level.disappearTime);
+                SyncTextBox(minusHPIdle, ref root.level.minusHPIdle);
+                SyncTextBox(minusHPMiss, ref root.level.minusHPMiss);
 
-            SyncTextBox(songName, ref root.level.songName);
-            SyncTextBox(songAuthor, ref root.level.songAuthor);
-            SyncTextBox(mapAuthor, ref root.level.mapAuthor);
-            SyncTextBox(keyAppear, ref root.level.appearTime);
-            SyncTextBox(preRing, ref root.level.preRingTime);
-            SyncTextBox(ring, ref root.level.ringTime);
-            SyncTextBox(hitTimeframe, ref root.level.hitTimeframe);
-            SyncTextBox(keyDisappear, ref root.level.disappearTime);
-            SyncTextBox(minusHPIdle, ref root.level.minusHPIdle);
-            SyncTextBox(minusHPMiss, ref root.level.minusHPMiss);
+                HandleImport(audioImportButton, "mp3,wav,wave,ogg,flac",
+                    path => { root.level.audioFile = Path.GetFileName(path); root.LoadAudio(); });
 
-            HandleImport(audioImportButton, "mp3,wav,wave,ogg,flac",
-                path => { root.level.audioFile = Path.GetFileName(path); root.LoadAudio(); });
-
-            HandleImport(bgImageImportButton, "png,jpg,jpeg,gif,bmp",
-                path => { root.level.imageBg = Path.GetFileName(path); root.LoadBackground(); });
+                HandleImport(bgImageImportButton, "png,jpg,jpeg,gif,bmp",
+                    path => { root.level.imageBg = Path.GetFileName(path); root.LoadBackground(); });
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
