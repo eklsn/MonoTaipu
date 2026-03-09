@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Taipu.Editor.Tabs
 {
-    public class Rhythm
+    public class Audio
     {
         Editor.EditorScene root = null;
-        public Rhythm(Editor.EditorScene root) { this.root = root; }
+        public Audio(Editor.EditorScene root) { this.root = root; }
         public void Update(GameTime gameTime) { }
         public void Draw(SpriteBatch spriteBatch) { }
     }

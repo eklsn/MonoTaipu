@@ -8,25 +8,24 @@ using System.Threading.Tasks;
 
 namespace Taipu.UI
 {
-    public class ToggleScale : Element
+    public class TextureButton : Element
     {
-        public Texture2D offTex;
-        public Texture2D onTex;
+        public Texture2D btnTex;
         public Sprite btnSpr;
         public Vector2 defScale;
         public Vector2 curScale;
         public float clickFactor = 0.75f;
-        public bool toggled = false;
+        public bool pressed = false;
+        public bool prevPressed = false;
         public bool prevToggled = false;
         public bool overMouseDown = false;
 
-        public ToggleScale(Texture2D offTex, Texture2D onTex, Vector2 scale, Vector2 position)  
+        public TextureButton(Texture2D btnTex, Vector2 scale, Vector2 position)  
         {
-            this.offTex = offTex;
-            this.onTex = onTex;
+            this.btnTex = btnTex;
             this.defScale = scale;
             this.localPosition = position;
-            btnSpr = new(this.offTex,this.localPosition);
+            btnSpr = new(this.btnTex,this.localPosition);
             btnSpr.origin = btnSpr.centerOrigin;
             btnSpr.scale = curScale*absoluteScale;
             btnSpr.position = absolutePosition;
@@ -34,7 +33,7 @@ namespace Taipu.UI
 
         protected override void OnUpdate(GameTime gametime)
         {
-            prevToggled = toggled;
+            prevPressed = pressed;
             if (MouseMan.LeftJustPressed() && btnSpr.rect.Contains(MouseMan.mousePos))
             {
                 overMouseDown = true;
@@ -43,18 +42,14 @@ namespace Taipu.UI
             {
                 overMouseDown = false;
             }
-            if (MouseMan.LeftJustReleased() && btnSpr.rect.Contains(MouseMan.mousePos))
+            if (overMouseDown && btnSpr.rect.Contains(MouseMan.mousePos))
             {
-                toggled = !toggled;
+                pressed = true;
                 
-            }
-            if (toggled)
-            {
-                btnSpr.texture = onTex;
             }
             else
             {
-                btnSpr.texture = offTex;
+                pressed = false;
             }
             if (overMouseDown)
             {
@@ -69,16 +64,20 @@ namespace Taipu.UI
         }
         public bool JustToggled()
         {
-            return (toggled != prevToggled);
+            if (pressed)
+            {
+                pressed = false;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         protected override void OnDraw(SpriteBatch spriteBatch)
         {
             btnSpr.Draw();
         }
-        public void SetToggle(bool toggle)
-        {
-            toggled = toggle;
-            prevToggled = toggle;
-        }
+        
     }
 }

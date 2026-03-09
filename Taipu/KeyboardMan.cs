@@ -10,7 +10,14 @@ namespace Taipu
         public static void Update()
         {
             previousKeyboard = currentKeyboard;
-            currentKeyboard = Keyboard.GetState();
+            if (Global.game.IsActive)
+            {
+                currentKeyboard = Keyboard.GetState();
+            }
+            else
+            {
+                currentKeyboard = new();
+            }
         }
         public static bool JustPressed(Keys key)
         {
