@@ -17,6 +17,7 @@ namespace Taipu.UI
         public String text;
         public Color color = Color.White;
         public bool centerOrig = false;
+        public Vector2 textScale = Vector2.One;
         public BitmapFont font;
         public Label(Vector2 position, String text, BitmapFont font)
         {
@@ -28,9 +29,13 @@ namespace Taipu.UI
         {
             
             size = font.MeasureString(text);
+            if (parent != null)
+            {
+                absolutePosition = parent.absolutePosition + localPosition;
+            }
             if (centerOrig)
             {
-                origin = centerOrigin;
+                origin = centerOrigin; 
             }
             Update(Global.gameTime);
             Global.spriteBatch.DrawString(
@@ -40,7 +45,7 @@ namespace Taipu.UI
                     color,
                     0f,
                     origin,
-                    absoluteScale,
+                    absoluteScale*textScale,
                     SpriteEffects.None,
                     0f
                 );

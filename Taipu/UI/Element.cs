@@ -11,8 +11,8 @@ namespace Taipu.UI
 {
     public class Element
     {
-        UI.Element parent;
-        List<UI.Element> children = new();
+        public UI.Element parent;
+        public List<UI.Element> children = new();
 
         public Vector2 localPosition = Vector2.Zero;
         public Vector2 absolutePosition = Vector2.Zero;
@@ -41,6 +41,17 @@ namespace Taipu.UI
             }
             child.parent = this;
             children.Add(child);
+        }
+        public void AddChildren(UI.Element[] children)
+        {
+            foreach (UI.Element child in children) {
+                if (child.parent != null)
+                {
+                    child.parent.RemoveChild(child);
+                }
+                child.parent = this;
+                this.children.Add(child);
+            }
         }
         public void RemoveChild(UI.Element child)
         {
