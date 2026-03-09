@@ -91,7 +91,6 @@ namespace Taipu.Editor
             if (KeyboardMan.JustPressed(Keys.F1))
             {
                 currentTab = EditorTabs.MetaEditor;
-                Debug.WriteLine("YEP");
             }
             if (KeyboardMan.JustPressed(Keys.F2))
             {

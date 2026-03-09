@@ -15,7 +15,7 @@ namespace Taipu.Editor
         public UI.Slider timeSlider = new(new(175, 650), new(950, 16));
         public UI.ToggleScale pauseBtn = new(SkinLoader.getTexture("pausebtn.png"), SkinLoader.getTexture("playbtn.png"), new Vector2(0.15f), new Vector2(1198, 657));
         BitmapFont font;
-        public String timerText;
+        public String timerText = "";
         public bottomBar()
         {
             AddChild(timeSlider);

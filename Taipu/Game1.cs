@@ -44,7 +44,7 @@ namespace Taipu
             WindowManager.SetResolution(1920,1080);
             //WindowManager.SetFullscreenBorderless(true);
             MatrixUpscaler.Update(Global.graphicsDevice.Viewport);
-            SceneManager.LoadScene(new Editor.EditorScene(null));
+            SceneManager.LoadScene(new Scenes.Disclaimer());
 
         }
 

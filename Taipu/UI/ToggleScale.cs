@@ -28,6 +28,8 @@ namespace Taipu.UI
             this.localPosition = position;
             btnSpr = new(this.offTex,this.localPosition);
             btnSpr.origin = btnSpr.centerOrigin;
+            btnSpr.scale = curScale*absoluteScale;
+            btnSpr.position = absolutePosition;
         }
 
         protected override void OnUpdate(GameTime gametime)
