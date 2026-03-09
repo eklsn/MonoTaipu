@@ -20,9 +20,7 @@ namespace Taipu.Editor.Tabs
         public List<KeyObject> renderKeys;
         public Sprite background;
         public Texture2D bgTex;
-        BitmapFont font; 
         KeyboardBg keyboard;
-        UI.Textbox textbox = new(new(532, 512), new(500, 64));
         Editor.bottomBar bottomBar = new();
         public float scrollFactor = 1.0f;
         public Main(Editor.EditorScene root)
@@ -31,7 +29,7 @@ namespace Taipu.Editor.Tabs
             keyboard = new();
             //keyboard.editor = this;
             renderKeys = new();
-            bottomBar.localPosition = new Vector2(0, 0);
+            bottomBar.localPosition = new Vector2(0, 300);
         }
         public void Update(GameTime gameTime) 
         {
@@ -52,7 +50,6 @@ namespace Taipu.Editor.Tabs
                 root.music.Seek(bottomBar.timeSlider.value);
             }
             keyboard.Update();
-            textbox.Update(gameTime);
             foreach (String[] key in root.level.keys)
             {
                 if (root.time < double.Parse(key[0]) - root.level.preRingTime - root.level.ringTime)
@@ -148,7 +145,7 @@ namespace Taipu.Editor.Tabs
             {
                 var options = new JsonSerializerOptions { IncludeFields = true };
                 string json = JsonSerializer.Serialize(root.level, typeof(TaipuMap), options);
-                File.Copy(root.mapPath, root.mapPath + ".bak");
+                File.Copy(root.mapPath, root.mapPath + ".bak",true);
                 File.WriteAllText(root.mapPath, json);
             }
 

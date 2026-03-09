@@ -1,208 +1,181 @@
-﻿
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NativeFileDialogSharp;
 using System.IO;
+
 
 namespace Taipu.Editor.Tabs
 {
     public class MetaEditor
     {
-        Editor.EditorScene root = null;
-        public Desktop desktop;
-        TextBox songName;
-        UI.Label songNameLabel;
-        TextBox songAuthor;
-        UI.Label songAuthorLabel;
-        TextBox mapAuthor;
-        UI.Label mapAuthorLabel;
-        Vector2 myraScale = Vector2.One * 2;
+        Editor.EditorScene root;
+        Desktop desktop;
         BitmapFont font;
-        UI.NinePatchButton audioImportButton;
-        UI.Label audioImportLabel;
-        UI.NinePatchButton bgImageImportButton;
-        UI.Label bgImageImportLabel;
-        public MetaEditor(Editor.EditorScene root) {
-            
-            
+        Vector2 myraScale = Vector2.One * 2;
+
+        TextBox songName, songAuthor, mapAuthor, keyAppear, preRing, ring,hitTimeframe, keyDisappear, minusHPIdle,minusHPMiss;
+        UI.Label songNameLabel, songAuthorLabel, mapAuthorLabel, audioImportLabel, bgImageImportLabel, keyAppearLabel, preRingLabel, ringLabel, hitTimeframeLabel, keyDisappearLabel, mHPIdleLabel, mHPMissLabel;
+        UI.NinePatchButton audioImportButton, bgImageImportButton;
+
+        public MetaEditor(Editor.EditorScene root)
+        {
             this.root = root;
-            desktop = new Desktop();
-            desktop.HasExternalTextInput = true;
-            Global.game.Window.TextInput += (s, a) =>
-            {
-                desktop.OnChar(a.Character);
-            };
             font = SkinLoader.getFont("fonts/main/main.fnt");
-            
-            songNameLabel = new(new Vector2(100, 95), "Song name",font);
-            songNameLabel.localScale = new Vector2(0.15f);
 
-            songName = new TextBox
-            {
-                Left = 150 / (int)myraScale.X,
-                Top = 200 / (int)myraScale.Y,
-                Width = 300,
-                Height = 30,
-                Text = "Song name here...",
-                Background = new SolidBrush(new Color(30, 30, 30)),
-                TextColor = Color.White
-            };
-            desktop.Widgets.Add(songName);
+            desktop = new Desktop { HasExternalTextInput = true, Scale = myraScale };
+            Global.game.Window.TextInput += (s, a) => desktop.OnChar(a.Character);
 
-            songAuthorLabel = new(songNameLabel.localPosition+new Vector2(0, 95), "Song author's name", font);
-            songAuthorLabel.localScale = new Vector2(0.15f);
+            songNameLabel = CreateLabel(new Vector2(100, 95), "Song name");
+            songName = CreateTextBox(78, 98, "Song name here...");
 
-            songAuthor = new TextBox
-            {
-                Left = songName.Left,
-                Top = songName.Top+70,
-                Width = 300,
-                Height = 30,
-                Text = "Song author name here...",
-                Background = new SolidBrush(new Color(30, 30, 30)),
-                TextColor = Color.White
-            };
-            
-            desktop.Widgets.Add(songAuthor);
+            songAuthorLabel = CreateLabel(songNameLabel.localPosition+new Vector2(0, 82), "Song author's name");
+            songAuthor = CreateTextBox(songName.Left, songName.Top+58, "Song author name here...");
 
-            mapAuthorLabel = new(songAuthorLabel.localPosition + new Vector2(0, 95), "Mapper's name", font);
-            mapAuthorLabel.localScale = new Vector2(0.15f);
-            
-            mapAuthor = new TextBox
-            {
-                Left = songAuthor.Left,
-                Top = songAuthor.Top + 70,
-                Width = 300,
-                Height = 30,
-                Text = "Mapper's name here...",
-                Background = new SolidBrush(new Color(30, 30, 30)),
-                TextColor = Color.White
-            };
-            desktop.Widgets.Add(mapAuthor);
-            audioImportLabel = new(mapAuthorLabel.localPosition + new Vector2(0, 105), "Audio file", font);
-            audioImportLabel.localScale = new Vector2(0.15f);
-            audioImportButton = new(SkinLoader.getTexture("9patchbtn.png"), font, 25, "Import audio file...", new Vector2(500, 100), songAuthorLabel.localPosition + new Vector2(205, 275));
-            audioImportButton.localScale = Vector2.One/1.25f;
-            audioImportButton.textScale = new Vector2(0.25f);
+            mapAuthorLabel = CreateLabel(songAuthorLabel.localPosition + new Vector2(0, 82), "Mapper's name");
+            mapAuthor = CreateTextBox(songAuthor.Left, songAuthor.Top + 58, "Mapper's name here...");
 
-            bgImageImportLabel = new(audioImportLabel.localPosition + new Vector2(0, 125), "Background Image file", font);
-            bgImageImportLabel.localScale = new Vector2(0.15f);
-            bgImageImportButton = new(SkinLoader.getTexture("9patchbtn.png"), font, 25, "Import BG image...", new Vector2(500, 100), audioImportButton.localPosition + new Vector2(0, 125));
-            bgImageImportButton.localScale = Vector2.One / 1.25f;
-            bgImageImportButton.textScale = new Vector2(0.25f);
-            desktop.Scale = myraScale;
+            audioImportLabel = CreateLabel(mapAuthorLabel.localPosition + new Vector2(0, 82), "Audio file");
+            audioImportButton = CreateButton(new Vector2(305, 415), "Import audio file...");
+
+            bgImageImportLabel = CreateLabel(new Vector2(100, 475), "Background Image file");
+            bgImageImportButton = CreateButton(new Vector2(305, 550), "Import BG image...");
+
+            keyAppearLabel = CreateLabel(songNameLabel.localPosition+new Vector2(500,0), "Key Appear time");
+            keyAppear = CreateTextBox(songName.Left + 372,songName.Top, "Key Appear time...");
+
+            preRingLabel = CreateLabel(keyAppearLabel.localPosition + new Vector2(0, 82), "Pre Ring time");
+            preRing = CreateTextBox(keyAppear.Left, keyAppear.Top + 58, "Pre Ring time...");
+
+            ringLabel = CreateLabel(preRingLabel.localPosition + new Vector2(0, 82), "Ring time");
+            ring = CreateTextBox(preRing.Left, preRing.Top + 60, "Ring time...");
+
+            hitTimeframeLabel = CreateLabel(ringLabel.localPosition + new Vector2(0, 82), "Hit timeframe");
+            hitTimeframe = CreateTextBox(ring.Left, ring.Top + 60, "Hit timeframe...");
+
+            keyDisappearLabel = CreateLabel(hitTimeframeLabel.localPosition + new Vector2(0, 82), "Disappear Time");
+            keyDisappear = CreateTextBox(hitTimeframe.Left, hitTimeframe.Top + 60, "Disappear Time...");
+
+            mHPIdleLabel = CreateLabel(keyDisappearLabel.localPosition + new Vector2(0, 76), "Minus HP Idle");
+            minusHPIdle = CreateTextBox(keyDisappear.Left, keyDisappear.Top + 60, "Minus HP Idle...");
+
+            mHPMissLabel = CreateLabel(mHPIdleLabel.localPosition + new Vector2(0, 76), "Minus HP Miss");
+            minusHPMiss = CreateTextBox(minusHPIdle.Left, minusHPIdle.Top + 60, "Minus HP Miss...");
         }
+
         public void Update(GameTime gameTime)
         {
             audioImportButton.Update(gameTime);
             bgImageImportButton.Update(gameTime);
             audioImportButton.text = root.level.audioFile;
             bgImageImportButton.text = root.level.imageBg;
-            if (root.currentTab != Taipu.Editor.EditorScene.EditorTabs.MetaEditor)
-            {
-                desktop.FocusedKeyboardWidget = null;
-                songName.Enabled = false;
-                songAuthor.Enabled = false;
-                mapAuthor.Enabled = false;
-            }
-            else
-            {
-                songName.Enabled = true;
-                songAuthor.Enabled = true;
-                mapAuthor.Enabled = true;
-            }
-            if (!songName.IsKeyboardFocused)
-            {
-                songName.Text = root.level.songName;
-            }
-            else
-            {
-                root.level.songName = songName.Text;
-            }
-            if (!songAuthor.IsKeyboardFocused)
-            {
-                songAuthor.Text = root.level.songAuthor;
-            }
-            else
-            {
-                root.level.songAuthor = songAuthor.Text;
-            }
-            if (!mapAuthor.IsKeyboardFocused)
-            {
-                mapAuthor.Text = root.level.mapAuthor;
-            }
-            else
-            {
-                root.level.mapAuthor = mapAuthor.Text;
-            }
-            if (audioImportButton.JustToggled())
-            { 
-                var openResult = NativeFileDialogSharp.Dialog.FileOpen("mp3,wav,wave,ogg,flac");
-                if (openResult.IsOk)
-                {
-                    audioImportButton.pressed = false;
-                    String newFilePath = Path.Combine(Path.GetDirectoryName(root.mapPath), Path.GetFileName(openResult.Path));
-                    if (openResult.Path != newFilePath) {
-                        try
-                        {
-                            File.Copy(openResult.Path, newFilePath, true);
-                            
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine("Error copying audio: " + ex.Message);
-                        }
-                    }
-                    root.level.audioFile = Path.GetFileName(openResult.Path);
-                    root.LoadAudio();
-                }
 
-            }
-            if (bgImageImportButton.JustToggled())
-            {
-                var openResult = NativeFileDialogSharp.Dialog.FileOpen("png,jpg,jpeg,gif,bmp");
-                if (openResult.IsOk)
-                {
-                    audioImportButton.pressed = false;
-                    String newFilePath = Path.Combine(Path.GetDirectoryName(root.mapPath), Path.GetFileName(openResult.Path));
-                    if (openResult.Path != newFilePath)
-                    {
-                        try
-                        {
-                            File.Copy(openResult.Path, newFilePath, true);
+            bool isActive = root.currentTab == Editor.EditorScene.EditorTabs.MetaEditor;
+            desktop.FocusedKeyboardWidget = isActive ? desktop.FocusedKeyboardWidget : null;
 
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine("Error copying image: " + ex.Message);
-                        }
-                    }
-                    root.level.imageBg = Path.GetFileName(openResult.Path);
-                    root.LoadBackground();
-                }
-            }
+            SyncTextBox(songName, ref root.level.songName);
+            SyncTextBox(songAuthor, ref root.level.songAuthor);
+            SyncTextBox(mapAuthor, ref root.level.mapAuthor);
+            SyncTextBox(keyAppear, ref root.level.appearTime);
+            SyncTextBox(preRing, ref root.level.preRingTime);
+            SyncTextBox(ring, ref root.level.ringTime);
+            SyncTextBox(hitTimeframe, ref root.level.hitTimeframe);
+            SyncTextBox(keyDisappear, ref root.level.disappearTime);
+            SyncTextBox(minusHPIdle, ref root.level.minusHPIdle);
+            SyncTextBox(minusHPMiss, ref root.level.minusHPMiss);
+
+            HandleImport(audioImportButton, "mp3,wav,wave,ogg,flac",
+                path => { root.level.audioFile = Path.GetFileName(path); root.LoadAudio(); });
+
+            HandleImport(bgImageImportButton, "png,jpg,jpeg,gif,bmp",
+                path => { root.level.imageBg = Path.GetFileName(path); root.LoadBackground(); });
         }
+
         public void Draw(SpriteBatch spriteBatch)
         {
-            
             desktop.Render();
-            songNameLabel.Draw(spriteBatch);
-            songAuthorLabel.Draw(spriteBatch);
-            mapAuthorLabel.Draw(spriteBatch);
-            audioImportLabel.Draw(spriteBatch);
+            foreach (var label in new[] { songNameLabel, songAuthorLabel, mapAuthorLabel, audioImportLabel, bgImageImportLabel, keyAppearLabel, preRingLabel,ringLabel,hitTimeframeLabel,keyDisappearLabel,mHPIdleLabel,mHPMissLabel })
+                label.Draw(spriteBatch);
+
             audioImportButton.Draw(spriteBatch);
             bgImageImportButton.Draw(spriteBatch);
-            bgImageImportLabel.Draw(spriteBatch);
+        }
+
+        private TextBox CreateTextBox(int x, int y, string placeholder)
+        {
+            var tb = new TextBox
+            {
+                Left = x,
+                Top = y,
+                Width = 300,
+                Height = 30,
+                Text = placeholder,
+                Background = new SolidBrush(new Color(30, 30, 30)),
+                TextColor = Color.White
+            };
+            desktop.Widgets.Add(tb);
+            return tb;
+        }
+
+        private UI.Label CreateLabel(Vector2 pos, string text)
+        {
+            return new UI.Label(pos, text, font) { localScale = new Vector2(0.15f) };
+        }
+
+        private UI.NinePatchButton CreateButton(Vector2 pos, string text)
+        {
+            return new UI.NinePatchButton(SkinLoader.getTexture("9patchbtn.png"), font, 25, text, new Vector2(500, 100), pos)
+            {
+                localScale = Vector2.One / 1.25f,
+                textScale = new Vector2(0.25f)
+            };
+        }
+
+        private void SyncTextBox(TextBox tb, ref string modelValue)
+        {
+            tb.Enabled = root.currentTab == Editor.EditorScene.EditorTabs.MetaEditor;
+
+            if (tb.IsKeyboardFocused)
+                modelValue = tb.Text;
+            else
+                tb.Text = modelValue;
+        }
+        private void SyncTextBox(TextBox tb, ref double modelValue)
+        {
+            tb.Enabled = root.currentTab == Editor.EditorScene.EditorTabs.MetaEditor;
+
+            if (tb.IsKeyboardFocused)
+            {
+                if (double.TryParse(tb.Text, out double result))
+                {
+                    modelValue = result;
+                }
+            }
+            else
+            {
+                tb.Text = modelValue.ToString();
+            }
+        }
+
+        private void HandleImport(UI.NinePatchButton btn, string filter, Action<string> onSuccess)
+        {
+            if (!btn.JustToggled()) return;
+
+            var result = NativeFileDialogSharp.Dialog.FileOpen(filter);
+            if (result.IsOk)
+            {
+                btn.pressed = false;
+                string destPath = Path.Combine(Path.GetDirectoryName(root.mapPath), Path.GetFileName(result.Path));
+
+                if (result.Path != destPath)
+                {
+                    try { File.Copy(result.Path, destPath, true); }
+                    catch { }
+                }
+                onSuccess(destPath);
+            }
         }
     }
 }
