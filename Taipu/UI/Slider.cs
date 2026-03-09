@@ -68,8 +68,8 @@ namespace Taipu.UI
                 valueLinear = Math.Clamp(((MouseMan.mousePos.X - absolutePosition.X) / scaledSize.X), 0, 1);
                 value = bottomRange + (valueLinear * (upperRange-bottomRange));
             }
-            sliderPoint.scale = Vector2.Lerp(sliderPoint.scale,new Vector2(pointScaleCurrent) * absoluteScale, 0.2f);
-            sliderPoint.position.X = float.Lerp(sliderPoint.position.X, (float)(absolutePosition.X+(valueLinear * scaledSize.X)), 0.4f);
+            sliderPoint.scale = Vector2.Lerp(sliderPoint.scale,new Vector2(pointScaleCurrent) * absoluteScale, 16f * (float)Global.deltaTime);
+            sliderPoint.position.X = float.Lerp(sliderPoint.position.X, (float)(absolutePosition.X+(valueLinear * scaledSize.X)), 32f * (float)Global.deltaTime);
             sliderPoint.position.Y = absolutePosition.Y + (size.Y / 2f);
             prevValue = value;
             prevValueLinear = valueLinear;

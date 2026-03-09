@@ -17,7 +17,7 @@ namespace Taipu.Scenes
         public UI.KeyHeart heart;
         public UI.KeyWarning warning;
         public double time = 0;
-        public int alpha = 0;
+        public double alpha = 0;
         public int state = 0;
         public Disclaimer()
         {
@@ -44,11 +44,11 @@ namespace Taipu.Scenes
             
             if ((time>0 && time < 1) || (time>4 && time < 5))
             {
-                alpha += 10;
+                alpha += 1000.0*Global.deltaTime;
             }
             if ((time>3 && time < 4) || (time > 8 && time < 9))
             {
-                alpha -= 10;
+                alpha -= 1000.0 * Global.deltaTime;
             }
             if (KeyboardMan.JustPressed(Microsoft.Xna.Framework.Input.Keys.Enter))
             {

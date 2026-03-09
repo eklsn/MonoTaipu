@@ -64,7 +64,7 @@ namespace Taipu.UI
             {
                 curScale = defScale;
             }
-            btnSpr.scale = Vector2.Lerp(btnSpr.scale,curScale*absoluteScale,0.4f);
+            btnSpr.scale = Vector2.Lerp(btnSpr.scale,curScale*absoluteScale,32f*(float)Global.deltaTime);
             btnSpr.position = absolutePosition;
         }
         public bool JustToggled()
