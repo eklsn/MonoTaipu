@@ -62,17 +62,21 @@ namespace Taipu.UI
             btnSpr.scale = Vector2.Lerp(btnSpr.scale,curScale*absoluteScale,0.4f);
             btnSpr.position = absolutePosition;
         }
-        public bool JustToggled()
+        public bool JustPressed()
         {
-            if (pressed)
-            {
-                pressed = false;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (pressed && !prevPressed);
+        }
+        public bool JustReleased()
+        {
+            return (!pressed && prevPressed);
+        }
+        public bool Down()
+        {
+            return (pressed);
+        }
+        public bool Up()
+        {
+            return (!pressed);
         }
         protected override void OnDraw(SpriteBatch spriteBatch)
         {
