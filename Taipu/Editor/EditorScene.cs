@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Taipu.Editor
@@ -39,8 +40,12 @@ namespace Taipu.Editor
 
         public Sprite background;
         public Texture2D bgTex;
-        public bool beatSnapping = false;
-        public int beatSnapDivisor = 1;
+        public bool beatSnapping = true;
+        public int beatSnapDivisor = 2;
+
+        public float scrollFactor = 1.0f;
+
+        public BadMetronomeTest metronome;
         public EditorScene(String mapPath)
         {
             while (true)
@@ -63,10 +68,11 @@ namespace Taipu.Editor
             level = loader.Load(mapPath);
             LoadAudio();
             LoadBackground();
-            
+
             while (level == null) { }
 
             currentTab = EditorTabs.Main;
+            metronome = new(level.bpm, level.beatOffset);
         }
         public void LoadAudio()
         {
@@ -90,6 +96,12 @@ namespace Taipu.Editor
         }
         public void Update()
         {
+            if (currentTab == EditorTabs.Audio)
+            {
+                metronome.bpm = level.bpm;
+                metronome.offset = level.beatOffset;
+                metronome.Update(time);
+            }
             metaTab.Update(Global.gameTime);
             if (KeyboardMan.JustPressed(Keys.F1))
             {
@@ -103,9 +115,64 @@ namespace Taipu.Editor
             {
                 currentTab = EditorTabs.Audio;
             }
+            if (currentTab != EditorTabs.MetaEditor)
+            {
+                if (KeyboardMan.JustPressed(Keys.Space) || mainTab.bottomBar.pauseBtn.JustToggled())
+                {
+                    if (music.state == ManagedBass.PlaybackState.Playing)
+                    {
+                        music.Stop();
+                    }
+                    else
+                    {
+                        music.Start(false);
+                    }
+                }
+
+                if (KeyboardMan.JustPressed(Keys.F10))
+                {
+                    var options = new JsonSerializerOptions { IncludeFields = true };
+                    string json = JsonSerializer.Serialize(level, typeof(TaipuMap), options);
+                    File.Copy(mapPath, mapPath + ".bak", true);
+                    File.WriteAllText(mapPath, json);
+                }
+
+                if (KeyboardMan.JustPressed(Keys.Home))
+                {
+                    music.Start(true);
+                }
+                if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.Down(Keys.LeftControl))
+                {
+                    scrollFactor = 16.0f;
+                }
+                else if (KeyboardMan.Down(Keys.LeftShift))
+                {
+                    scrollFactor = 8.0f;
+                }
+                else if (KeyboardMan.Down(Keys.LeftControl))
+                {
+                    scrollFactor = 0.5f;
+                }
+                else
+                {
+                    scrollFactor = 1.0f;
+                }
+                if (MouseMan.MWheelUp() || MouseMan.MWheelDown())
+                {
+                    scrollFactor = scrollFactor * 2;
+                }
+                if (KeyboardMan.Down(Keys.Left) || MouseMan.MWheelUp())
+                {
+                    music.Seek(music.streamPosition - (0.05 * scrollFactor));
+                }
+                if (KeyboardMan.Down(Keys.Right) || MouseMan.MWheelDown())
+                {
+                    music.Seek(music.streamPosition + (0.05 * scrollFactor));
+                }
+            }
             switch (currentTab)
             {
-                
+
                 case EditorTabs.Main:
                     mainTab.Update(Global.gameTime); return;
                 case EditorTabs.Audio:
@@ -115,7 +182,7 @@ namespace Taipu.Editor
                 case EditorTabs.MetaEditor:
                     metaTab.Update(Global.gameTime); return;
             }
-            
+
         }
         public double CreateKeyTime(double time)
         {
@@ -141,7 +208,8 @@ namespace Taipu.Editor
         public void Draw()
         {
             background?.Draw();
-            switch (currentTab) {
+            switch (currentTab)
+            {
                 case EditorTabs.Main:
                     mainTab.Draw(Global.spriteBatch); return;
                 case EditorTabs.Audio:
