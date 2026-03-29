@@ -1,16 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using MonoGame.Extended;
 namespace Taipu.Editor.Tabs
 {
     public class Main
