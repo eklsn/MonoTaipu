@@ -21,7 +21,8 @@ namespace Taipu.Editor.Tabs
         public Sprite background;
         public Texture2D bgTex;
         KeyboardBg keyboard;
-        Editor.bottomBar bottomBar = new();
+        public Editor.bottomBar bottomBar = new();
+        public Editor.beatsnapBar beatsnapBar = new();
         public float scrollFactor = 1.0f;
         public Main(Editor.EditorScene root)
         {
@@ -34,6 +35,8 @@ namespace Taipu.Editor.Tabs
         public void Update(GameTime gameTime) 
         {
             if (root?.currentTab == me)
+            beatsnapBar.Update(gameTime);
+            root.beatSnapDivisor = beatsnapBar.beatSnap;
             bottomBar.localPosition = Vector2.Lerp(bottomBar.localPosition, Vector2.Zero, 8f * (float)Global.deltaTime);
             bottomBar.Update(Global.gameTime);
             if (bottomBar.timeSlider.upperRange != root.music.streamLength)
@@ -129,58 +132,7 @@ namespace Taipu.Editor.Tabs
                 }
             }
 
-            if (KeyboardMan.JustPressed(Keys.Space) || bottomBar.pauseBtn.JustToggled())
-            {
-                if (root.music.state == ManagedBass.PlaybackState.Playing)
-                {
-                    root.music.Stop();
-                }
-                else
-                {
-                    root.music.Start(false);
-                }
-            }
-
-            if (KeyboardMan.JustPressed(Keys.F10))
-            {
-                var options = new JsonSerializerOptions { IncludeFields = true };
-                string json = JsonSerializer.Serialize(root.level, typeof(TaipuMap), options);
-                File.Copy(root.mapPath, root.mapPath + ".bak",true);
-                File.WriteAllText(root.mapPath, json);
-            }
-
-            if (KeyboardMan.JustPressed(Keys.Home))
-            {
-                root.music.Start(true);
-            }
-            if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.Down(Keys.LeftControl))
-            {
-                scrollFactor = 16.0f;
-            }
-            else if (KeyboardMan.Down(Keys.LeftShift))
-            {
-                scrollFactor = 8.0f;
-            }
-            else if (KeyboardMan.Down(Keys.LeftControl))
-            {
-                scrollFactor = 0.5f;
-            }
-            else
-            {
-                scrollFactor = 1.0f;
-            }
-            if (MouseMan.MWheelUp() || MouseMan.MWheelDown())
-            {
-                scrollFactor = scrollFactor * 2;
-            }
-            if (KeyboardMan.Down(Keys.Left) || MouseMan.MWheelUp())
-            {
-                root.music.Seek(root.music.streamPosition - (0.05 * scrollFactor));
-            }
-            if (KeyboardMan.Down(Keys.Right) || MouseMan.MWheelDown())
-            {
-                root.music.Seek(root.music.streamPosition + (0.05 * scrollFactor));
-            }
+            
 
             if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.JustPressed(Keys.Delete))
             {
@@ -215,6 +167,7 @@ namespace Taipu.Editor.Tabs
         public void Draw(SpriteBatch spriteBatch) 
         {
             background?.Draw();
+            beatsnapBar.Draw(Global.spriteBatch);
             bottomBar.Draw(Global.spriteBatch);
             keyboard.Draw();
             foreach (KeyObject key in renderKeys)
