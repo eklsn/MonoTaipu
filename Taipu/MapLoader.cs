@@ -1,12 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Runtime.InteropServices.JavaScript;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 namespace Taipu

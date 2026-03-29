@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 
 namespace Taipu
 {
