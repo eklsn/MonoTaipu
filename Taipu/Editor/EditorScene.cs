@@ -39,6 +39,8 @@ namespace Taipu.Editor
 
         public Sprite background;
         public Texture2D bgTex;
+        public bool beatSnapping = false;
+        public int beatSnapDivisor = 1;
         public EditorScene(String mapPath)
         {
             while (true)
@@ -115,9 +117,20 @@ namespace Taipu.Editor
             }
             
         }
+        public double CreateKeyTime(double time)
+        {
+            if (beatSnapping)
+            {
+                return Audio.BeatSnap.toDivisor(time, level.bpm, beatSnapDivisor);
+            }
+            else
+            {
+                return time;
+            }
+        }
         public void CreateKey(char keypressed)
         {
-            String[] arrtemp = [Math.Round(time, 3).ToString(), keypressed.ToString()];
+            String[] arrtemp = [Math.Round(CreateKeyTime(time), 3).ToString(), keypressed.ToString()];
             int insPos = 0;
             while (insPos < level.keys.Count && double.Parse(level.keys[insPos][0]) < time)
             {

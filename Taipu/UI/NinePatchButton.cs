@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended; // Required for Thickness
+using MonoGame.Extended;
 
 namespace Taipu.UI
 {
