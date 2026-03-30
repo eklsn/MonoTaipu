@@ -135,6 +135,8 @@ namespace Taipu
             {
                 convertedMap["songAuthor"] = "Unknown Author";
             }
+            convertedMap["bpm"] = 0;
+            convertedMap["beatOffset"] = 0;
             convertedMap["appearTime"] = convertedMap["preRingTime"];
             convertedMap["disappearTime"] = 0.5;
             convertedMap["schemeVersion"] = 0;
