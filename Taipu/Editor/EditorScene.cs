@@ -188,6 +188,13 @@ namespace Taipu.Editor
                 return time;
             }
         }
+        public void ResnapAll(int divisor)
+        {
+            foreach (String[] key in level.keys)
+            {
+                key[0] = Audio.BeatSnap.toDivisor(Convert.ToDouble(key[0]), level.bpm, divisor).ToString();
+            }
+        }
         public void CreateKey(char keypressed)
         {
             String[] arrtemp = [Math.Round(CreateKeyTime(time), 3).ToString(), keypressed.ToString()];
