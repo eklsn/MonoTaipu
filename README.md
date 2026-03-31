@@ -1,9 +1,10 @@
-# Taipu (MonoGame)
+# Taipu
 Project in development since February 2025
 
 MonoGame iteration in development since January 2026
 
 > The game is still a work-in-progress.
+> Older Godot version is available in old_godot branch
 
 ## Key Features
 
