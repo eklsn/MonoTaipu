@@ -3,7 +3,7 @@ Project in development since February 2025
 
 MonoGame iteration in development since January 2026
 
-# The game is still pretty much work-in-progress.
+> The game is still a work-in-progress.
 
 ## Key Features
 
@@ -21,3 +21,4 @@ MonoGame iteration in development since January 2026
 - ManagedBass
 - NativeFileDialogSharp
 
+All the libraries, binaries, music and content belong to their respective authors.
