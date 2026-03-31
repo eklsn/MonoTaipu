@@ -1,4 +1,4 @@
 # Taipu (Old)
-Godot branch for Taipu.
+Godot branch of Taipu.
 
 Was deprecated for audio-latency issues.
