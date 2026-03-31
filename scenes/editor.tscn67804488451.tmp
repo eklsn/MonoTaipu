@@ -1,0 +1,222 @@
+[gd_scene load_steps=9 format=3 uid="uid://do4qkdqu31e17"]
+
+[ext_resource type="Script" uid="uid://xj2yatu2hea8" path="res://scripts/editor.gd" id="1_ba0ut"]
+[ext_resource type="PackedScene" uid="uid://ct1aqxmxxn4ml" path="res://prefabs/keyman.tscn" id="2_ba0ut"]
+[ext_resource type="Script" uid="uid://cer1pdkoq8kv4" path="res://scripts/ui/editor/tab_bar.gd" id="2_xg7d5"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/services/gamevfx.gd" id="3_q68jb"]
+[ext_resource type="Script" uid="uid://2d0kgpplsvy" path="res://scripts/ui/editor/time_slider.gd" id="4_q68jb"]
+[ext_resource type="Script" uid="uid://dlre72yhbjcsy" path="res://scripts/ui/metaedit_fields.gd" id="6_5lcyj"]
+[ext_resource type="Script" uid="uid://bvmh11i7iqb4v" path="res://scripts/ui/editormeta_tab.gd" id="6_5tm2q"]
+[ext_resource type="Script" uid="uid://cf318gstnlptc" path="res://scripts/ui/metaedit_buttons.gd" id="7_5tm2q"]
+
+[node name="Editor" type="Node2D"]
+script = ExtResource("1_ba0ut")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -20
+offset_left = -1.0
+offset_top = -2.0
+offset_right = 1919.0
+offset_bottom = 1077.0
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -10
+offset_right = 1920.0
+offset_bottom = 1080.0
+volume_db = -80.0
+autoplay = true
+expand = true
+bus = &"Music"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+autoplay = true
+
+[node name="Button" type="Button" parent="."]
+visible = false
+offset_left = 132.0
+offset_top = 34.0
+offset_right = 496.0
+offset_bottom = 124.0
+theme_override_font_sizes/font_size = 64
+text = "Metadata"
+
+[node name="Button2" type="Button" parent="."]
+visible = false
+offset_left = 556.0
+offset_top = 32.0
+offset_right = 920.0
+offset_bottom = 122.0
+theme_override_font_sizes/font_size = 64
+text = "Edit"
+
+[node name="Button3" type="Button" parent="."]
+visible = false
+offset_left = 985.0
+offset_top = 32.0
+offset_right = 1349.0
+offset_bottom = 122.0
+theme_override_font_sizes/font_size = 64
+text = "Rhythm"
+
+[node name="Button4" type="Button" parent="."]
+visible = false
+offset_left = 1404.0
+offset_top = 30.0
+offset_right = 1768.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 64
+text = "Finish"
+
+[node name="TabBar" type="TabBar" parent="." node_paths=PackedStringArray("EditTab", "MetaTab")]
+offset_right = 1910.0
+offset_bottom = 153.0
+theme_override_font_sizes/font_size = 64
+current_tab = 1
+tab_alignment = 1
+tab_count = 4
+tab_0/title = "Metadata"
+tab_1/title = "Edit"
+tab_2/title = "Rhythm"
+tab_3/title = "Finish"
+script = ExtResource("2_xg7d5")
+EditTab = NodePath("../Preview")
+MetaTab = NodePath("../MetaTab")
+
+[node name="fade" type="Node2D" parent="."]
+visible = false
+script = ExtResource("3_q68jb")
+
+[node name="fade" type="ColorRect" parent="fade"]
+offset_right = 1920.0
+offset_bottom = 1085.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Preview" parent="." instance=ExtResource("2_ba0ut")]
+
+[node name="curtime" type="Label" parent="Preview"]
+offset_left = 7.0
+offset_top = 825.0
+offset_right = 236.0
+offset_bottom = 1046.0
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="time" type="HSlider" parent="Preview"]
+offset_left = 234.00002
+offset_top = 1016.0
+offset_right = 1180.0
+offset_bottom = 1032.0
+scale = Vector2(1.5, 1.5)
+max_value = 0.0
+step = 0.001
+script = ExtResource("4_q68jb")
+
+[node name="MetaTab" type="Node2D" parent="."]
+script = ExtResource("6_5tm2q")
+
+[node name="songname" type="LineEdit" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 230.0
+offset_right = 746.0
+offset_bottom = 296.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Untitled Track"
+script = ExtResource("6_5lcyj")
+meta_name = "name"
+
+[node name="songauthor" type="LineEdit" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 319.0
+offset_right = 746.0
+offset_bottom = 385.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Unnamed Author"
+script = ExtResource("6_5lcyj")
+meta_name = "song_author"
+
+[node name="lvlauthor" type="LineEdit" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 409.0
+offset_right = 746.0
+offset_bottom = 475.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Unnamed Mapper"
+script = ExtResource("6_5lcyj")
+meta_name = "lvl_author"
+
+[node name="preringtime" type="LineEdit" parent="MetaTab"]
+offset_left = 1186.0
+offset_top = 228.0
+offset_right = 1662.0
+offset_bottom = 294.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Pre Ring Time"
+virtual_keyboard_type = 3
+script = ExtResource("6_5lcyj")
+meta_name = "pre_ring_time"
+
+[node name="ringtime" type="LineEdit" parent="MetaTab"]
+offset_left = 1186.0
+offset_top = 317.0
+offset_right = 1662.0
+offset_bottom = 383.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Ring Time"
+virtual_keyboard_type = 3
+script = ExtResource("6_5lcyj")
+meta_name = "ring_time"
+
+[node name="hittimeframe" type="LineEdit" parent="MetaTab"]
+offset_left = 1186.0
+offset_top = 407.0
+offset_right = 1662.0
+offset_bottom = 473.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Post Ring Time"
+script = ExtResource("6_5lcyj")
+meta_name = "hit_timeframe"
+
+[node name="music" type="Button" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 524.0
+offset_right = 744.0
+offset_bottom = 592.0
+theme_override_font_sizes/font_size = 36
+text = "Import music"
+script = ExtResource("7_5tm2q")
+meta_name = "audiofile"
+
+[node name="video" type="Button" parent="MetaTab"]
+offset_left = 269.0
+offset_top = 610.0
+offset_right = 743.0
+offset_bottom = 678.0
+theme_override_font_sizes/font_size = 36
+text = "Import video"
+script = ExtResource("7_5tm2q")
+meta_name = "videofile"
+
+[node name="cover" type="Button" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 696.0
+offset_right = 744.0
+offset_bottom = 764.0
+theme_override_font_sizes/font_size = 36
+text = "Import cover"
+script = ExtResource("7_5tm2q")
+meta_name = "img_cover"
+
+[node name="FinishTab" type="Node2D" parent="."]
+
+[node name="RhythmTab" type="Node2D" parent="."]
+
+[connection signal="tab_changed" from="TabBar" to="TabBar" method="_on_tab_changed"]
+[connection signal="drag_ended" from="Preview/time" to="Preview/time" method="_on_drag_ended"]
+[connection signal="drag_started" from="Preview/time" to="Preview/time" method="_on_drag_started"]
+[connection signal="value_changed" from="Preview/time" to="Preview/time" method="_on_value_changed"]

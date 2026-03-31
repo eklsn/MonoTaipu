@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3 uid="uid://bknmkko11xxxo"]
+
+[ext_resource type="Script" uid="uid://b0xym4dqm0g2l" path="res://scripts/services/menumusic.gd" id="1_2m5jr"]
+[ext_resource type="AudioStream" uid="uid://vy466rbvubkn" path="res://sounds/snd_backout.ogg" id="1_wyf3r"]
+[ext_resource type="AudioStream" uid="uid://dev3lwdq3c421" path="res://sounds/snd_levelstart.ogg" id="2_2m5jr"]
+[ext_resource type="Script" uid="uid://jdo70tmesp4e" path="res://scripts/services/menumusfader.gd" id="4_1fm5x"]
+[ext_resource type="AudioStream" uid="uid://f0g4vtfek846" path="res://sounds/snd_playmode.ogg" id="5_m6ka5"]
+
+[sub_resource type="GDScript" id="GDScript_1fm5x"]
+script/source = "extends AudioStreamPlayer
+var loop : bool = false
+
+
+func _process(delta):
+	if not is_playing() and loop:
+		play()
+"
+
+[node name="Globalaud" type="Node2D"]
+script = ExtResource("1_2m5jr")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+bus = &"Music"
+script = SubResource("GDScript_1fm5x")
+
+[node name="Backout" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_wyf3r")
+volume_db = -10.326
+bus = &"SFX"
+
+[node name="Levelstart" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_2m5jr")
+volume_db = -10.326
+bus = &"SFX"
+
+[node name="vidplace" type="VideoStreamPlayer" parent="."]
+expand = true
+bus = &"Music"
+
+[node name="fader" type="Node" parent="."]
+script = ExtResource("4_1fm5x")
+
+[node name="Playmode" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_m6ka5")
+volume_db = -10.326
+bus = &"SFX"
+
+[connection signal="finished" from="Music" to="." method="_on_music_finished"]
+[connection signal="finished" from="vidplace" to="vidplace" method="_on_finished"]

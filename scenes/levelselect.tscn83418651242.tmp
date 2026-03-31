@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://rmak2nmut86x"]
+
+[ext_resource type="Script" uid="uid://bbn2e62cfw71h" path="res://scripts/levelselect.gd" id="1_xuh2y"]
+[ext_resource type="Script" uid="uid://kfdq1b0ar74s" path="res://scripts/lvlflow.gd" id="2_vttqt"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_pneju"]
+viewport_path = NodePath("viewport")
+
+[node name="Levelselect" type="Node2D"]
+script = ExtResource("1_xuh2y")
+
+[node name="viewport" type="SubViewport" parent="."]
+transparent_bg = true
+size = Vector2i(1920, 512)
+
+[node name="lvlflow" type="Node3D" parent="viewport"]
+script = ExtResource("2_vttqt")
+
+[node name="camera" type="Camera3D" parent="viewport/lvlflow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.20971665)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_top = 121.0
+offset_right = 1920.0
+offset_bottom = 633.0
+texture = SubResource("ViewportTexture_pneju")

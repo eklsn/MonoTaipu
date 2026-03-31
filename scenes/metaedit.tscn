@@ -1,0 +1,129 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmbnssmuht1xh"]
+
+[ext_resource type="Script" uid="uid://dlre72yhbjcsy" path="res://scripts/ui/metaedit_fields.gd" id="1_ftmy0"]
+[ext_resource type="Script" uid="uid://cf318gstnlptc" path="res://scripts/ui/metaedit_buttons.gd" id="2_v6obo"]
+
+[node name="Metaedit" type="Node2D"]
+
+[node name="cancel" type="Button" parent="."]
+offset_left = 1132.0
+offset_top = 930.0
+offset_right = 1464.0
+offset_bottom = 1024.0
+theme_override_font_sizes/font_size = 48
+text = "Cancel"
+
+[node name="apply" type="Button" parent="."]
+offset_left = 1548.0
+offset_top = 930.0
+offset_right = 1851.0
+offset_bottom = 1024.0
+theme_override_font_sizes/font_size = 48
+text = "Apply"
+
+[node name="edit" type="Button" parent="."]
+offset_left = 452.0
+offset_top = 930.0
+offset_right = 759.0
+offset_bottom = 1024.0
+theme_override_font_sizes/font_size = 48
+text = "Edit level"
+
+[node name="back" type="Button" parent="."]
+offset_left = 76.0
+offset_top = 930.0
+offset_right = 383.0
+offset_bottom = 1024.0
+theme_override_font_sizes/font_size = 48
+text = "Back to Main"
+
+[node name="songname" type="LineEdit" parent="."]
+offset_left = 374.0
+offset_top = 125.0
+offset_right = 850.0
+offset_bottom = 191.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Untitled Track"
+script = ExtResource("1_ftmy0")
+meta_name = "song_name"
+
+[node name="songauthor" type="LineEdit" parent="."]
+offset_left = 374.0
+offset_top = 214.0
+offset_right = 850.0
+offset_bottom = 280.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Unnamed Author"
+script = ExtResource("1_ftmy0")
+meta_name = "song_author"
+
+[node name="lvlauthor" type="LineEdit" parent="."]
+offset_left = 374.0
+offset_top = 304.0
+offset_right = 850.0
+offset_bottom = 370.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Unnamed Mapper"
+script = ExtResource("1_ftmy0")
+meta_name = "lvl_author"
+
+[node name="songname2" type="LineEdit" parent="."]
+offset_left = 1290.0
+offset_top = 123.0
+offset_right = 1766.0
+offset_bottom = 189.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Pre Ring Time"
+virtual_keyboard_type = 3
+script = ExtResource("1_ftmy0")
+meta_name = "song_name"
+
+[node name="songauthor2" type="LineEdit" parent="."]
+offset_left = 1290.0
+offset_top = 212.0
+offset_right = 1766.0
+offset_bottom = 278.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Ring Time"
+virtual_keyboard_type = 3
+script = ExtResource("1_ftmy0")
+meta_name = "song_author"
+
+[node name="lvlauthor2" type="LineEdit" parent="."]
+offset_left = 1290.0
+offset_top = 302.0
+offset_right = 1766.0
+offset_bottom = 368.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Post Ring Time"
+script = ExtResource("1_ftmy0")
+meta_name = "lvl_author"
+
+[node name="Button" type="Button" parent="."]
+offset_left = 374.0
+offset_top = 419.0
+offset_right = 848.0
+offset_bottom = 487.0
+theme_override_font_sizes/font_size = 36
+text = "Import music"
+script = ExtResource("2_v6obo")
+meta_name = "audiofile"
+
+[node name="Button2" type="Button" parent="."]
+offset_left = 373.0
+offset_top = 505.0
+offset_right = 847.0
+offset_bottom = 573.0
+theme_override_font_sizes/font_size = 36
+text = "Import video"
+script = ExtResource("2_v6obo")
+meta_name = "videofile"
+
+[node name="Button3" type="Button" parent="."]
+offset_left = 374.0
+offset_top = 591.0
+offset_right = 848.0
+offset_bottom = 659.0
+theme_override_font_sizes/font_size = 36
+text = "Import cover"
+script = ExtResource("2_v6obo")

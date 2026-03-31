@@ -1,0 +1,1002 @@
+[gd_scene load_steps=6 format=3 uid="uid://do4qkdqu31e17"]
+
+[ext_resource type="Script" uid="uid://b7xgeu1jsowec" path="res://scripts/keyman.gd" id="1_q68jb"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/gamevfx.gd" id="3_q68jb"]
+
+[sub_resource type="GDScript" id="GDScript_pxqd5"]
+resource_name = "music"
+script/source = "extends AudioStreamPlayer2D
+var curpos
+"
+
+[sub_resource type="GDScript" id="GDScript_ba0ut"]
+script/source = "extends Node2D
+func _ready() -> void:
+	var file = FileAccess.open(Global.gamepath + \"/skins/skin.txt\", FileAccess.READ)
+	if file != null:
+		var skin_name = file.get_as_text().strip_edges()
+		print(skin_name)
+		file.close()
+		var texture_path = Global.gamepath + \"/skins/\" + skin_name + \"/\"
+		var outtex = ImageTexture.create_from_image(Image.load_from_file(texture_path+\"stroke_10px_gray.png\"))
+		for child in get_children():
+			child.texture=outtex
+"
+
+[sub_resource type="GDScript" id="GDScript_q68jb"]
+script/source = "extends Control
+
+@export var zoom := 100.0       # pixels per second
+@export var offset := 0.0       # scroll offset
+@export var key_width := 40.0
+@export var key_height := 24.0
+@export var key_spacing := 4.0
+var dragging := false
+var drag_start_x := 0.0
+var drag_start_offset := 0.0
+
+func _draw():
+	# background
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.12, 0.12, 0.12))
+
+	# simple vertical bars for reference
+	for i in range(int(offset), int(offset + size.x / zoom) + 1):
+		var x := (i - offset) * zoom
+		draw_line(Vector2(x, 0), Vector2(x, size.y), Color(0.6, 0.6, 0.6))
+
+	# draw keys
+	var editor = get_tree().current_scene
+	if editor == null or not editor.has_variable(\"editkeys\"):
+		return
+
+	var stack = 0
+	for k in editor.editkeys:
+		if k == [0]:
+			continue
+
+		var t = k[editor.datapoints[\"timing\"]]
+		var key_name = str(k[editor.datapoints[\"key\"]])
+		var x = (t - offset) * zoom
+		var y = stack * (key_height + key_spacing)
+
+		# rectangle
+		draw_rect(Rect2(Vector2(x - key_width*0.5, y), Vector2(key_width, key_height)), Color(0.9, 0.3, 0.3))
+
+		# text inside rectangle
+		draw_string(load(\"res://fonts/VarelaRound-Regular.ttf\"), Vector2(x - key_width*0.4, y + key_height*0.7), key_name, Color(1,1,1))
+
+		stack += 1
+		if y > size.y - key_height:
+			stack = 0
+
+func _gui_input(event):
+	# drag timeline with middle mouse
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_MIDDLE:
+			dragging = event.pressed
+			if dragging:
+				drag_start_x = event.position.x
+				drag_start_offset = offset
+
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			zoom *= 1.1
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			zoom *= 0.9
+		queue_redraw()
+
+	if event is InputEventMouseMotion and dragging:
+		offset = drag_start_offset + (event.position.x - drag_start_x) / zoom
+		queue_redraw()
+
+func _process(_delta):
+	queue_redraw()
+"
+
+[node name="Editor" type="Node2D"]
+script = ExtResource("1_q68jb")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+script = SubResource("GDScript_pxqd5")
+
+[node name="Label" type="Label" parent="AudioStreamPlayer2D"]
+visible = false
+offset_top = 896.0
+offset_right = 704.0
+offset_bottom = 1080.0
+theme_override_font_sizes/font_size = 64
+text = "0"
+vertical_alignment = 2
+
+[node name="Label" type="Label" parent="."]
+offset_right = 1845.0
+offset_bottom = 1056.0
+theme_override_font_sizes/font_size = 64
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -10
+offset_right = 1920.0
+offset_bottom = 1080.0
+volume_db = -80.0
+autoplay = true
+expand = true
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="FileDialog2" type="FileDialog" parent="."]
+access = 2
+
+[node name="NativeConfirmationDialog" type="NativeConfirmationDialog" parent="."]
+dialog_text = "aaa"
+
+[node name="NativeAcceptDialog" type="NativeAcceptDialog" parent="."]
+
+[node name="keybrd" type="Node2D" parent="."]
+position = Vector2(-1, -2)
+script = SubResource("GDScript_ba0ut")
+
+[node name="Q" type="Sprite2D" parent="keybrd"]
+position = Vector2(267.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/Q"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "Q"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="W" type="Sprite2D" parent="keybrd"]
+position = Vector2(411.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/W"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "W"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="E" type="Sprite2D" parent="keybrd"]
+position = Vector2(555.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/E"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "E"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="R" type="Sprite2D" parent="keybrd"]
+position = Vector2(699.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/R"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "R"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="T" type="Sprite2D" parent="keybrd"]
+position = Vector2(843.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/T"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "T"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Y" type="Sprite2D" parent="keybrd"]
+position = Vector2(987.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/Y"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "Y"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="U" type="Sprite2D" parent="keybrd"]
+position = Vector2(1131.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/U"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "U"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="I" type="Sprite2D" parent="keybrd"]
+position = Vector2(1275.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/I"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "I"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="O" type="Sprite2D" parent="keybrd"]
+position = Vector2(1419.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/O"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "O"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="P" type="Sprite2D" parent="keybrd"]
+position = Vector2(1563.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/P"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "P"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="[" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1707.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/["]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "["
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="]" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1851.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/]"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "]"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="\\" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1994.51, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/\\"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "\\"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="1" type="Sprite2D" parent="keybrd"]
+position = Vector2(264, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/1"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="2" type="Sprite2D" parent="keybrd"]
+position = Vector2(408, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/2"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="3" type="Sprite2D" parent="keybrd"]
+position = Vector2(552, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/3"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="4" type="Sprite2D" parent="keybrd"]
+position = Vector2(696, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/4"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="5" type="Sprite2D" parent="keybrd"]
+position = Vector2(840, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/5"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="6" type="Sprite2D" parent="keybrd"]
+position = Vector2(984, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/6"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "6"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="7" type="Sprite2D" parent="keybrd"]
+position = Vector2(1128, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/7"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="8" type="Sprite2D" parent="keybrd"]
+position = Vector2(1272, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/8"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "8"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="9" type="Sprite2D" parent="keybrd"]
+position = Vector2(1416, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/9"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "9"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="0" type="Sprite2D" parent="keybrd"]
+position = Vector2(1560, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/0"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="-" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1704, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/-"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "-"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="=" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1848, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/="]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "="
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="A" type="Sprite2D" parent="keybrd"]
+position = Vector2(309.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/A"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 256
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="S" type="Sprite2D" parent="keybrd"]
+position = Vector2(453.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/S"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="D" type="Sprite2D" parent="keybrd"]
+position = Vector2(597.384, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/D"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="F" type="Sprite2D" parent="keybrd"]
+position = Vector2(741.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/F"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "F"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="G" type="Sprite2D" parent="keybrd"]
+position = Vector2(885.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/G"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "G"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="H" type="Sprite2D" parent="keybrd"]
+position = Vector2(1029.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/H"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "H"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="J" type="Sprite2D" parent="keybrd"]
+position = Vector2(1173.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/J"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "J"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="K" type="Sprite2D" parent="keybrd"]
+position = Vector2(1317.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/K"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "K"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="L" type="Sprite2D" parent="keybrd"]
+position = Vector2(1461.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/L"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "L"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name=";" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1605.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/;"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = ";"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="\'" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1749.38, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/\'"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "'"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Z" type="Sprite2D" parent="keybrd"]
+position = Vector2(385.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/Z"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "Z"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="X" type="Sprite2D" parent="keybrd"]
+position = Vector2(529.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/X"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "X"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="C" type="Sprite2D" parent="keybrd"]
+position = Vector2(673.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/C"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "C"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="V" type="Sprite2D" parent="keybrd"]
+position = Vector2(817.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/V"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "V"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="B" type="Sprite2D" parent="keybrd"]
+position = Vector2(961.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/B"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "B"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="N" type="Sprite2D" parent="keybrd"]
+position = Vector2(1105.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/N"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "N"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="M" type="Sprite2D" parent="keybrd"]
+position = Vector2(1249.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/M"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "M"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="," type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1393.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/,"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = ","
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="point" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1537.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/point"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "."
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="frontslash" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1681.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("3_q68jb")
+
+[node name="Label" type="Label" parent="keybrd/frontslash"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "/"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -20
+offset_right = 1920.0
+offset_bottom = 1079.0
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1913.0
+offset_bottom = 445.0
+script = SubResource("GDScript_q68jb")
+zoom = null
+offset = null
+key_width = null
+key_height = null
+key_spacing = null
+
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

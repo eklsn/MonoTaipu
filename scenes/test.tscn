@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bx3og8xyhmfvu"]
+
+[ext_resource type="PackedScene" uid="uid://ct8e7kgnatafk" path="res://prefabs/key.tscn" id="1_pn7v0"]
+
+[node name="Test" type="Node2D"]
+
+[node name="Key" parent="." instance=ExtResource("1_pn7v0")]
+position = Vector2(933, 541)

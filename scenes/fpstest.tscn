@@ -1,0 +1,392 @@
+[gd_scene load_steps=3 format=3 uid="uid://d38veerqi7nuk"]
+
+[ext_resource type="PackedScene" uid="uid://ct8e7kgnatafk" path="res://prefabs/key.tscn" id="1_30id6"]
+
+[sub_resource type="GDScript" id="GDScript_aetdd"]
+
+[node name="Keytest" type="Node2D"]
+script = SubResource("GDScript_aetdd")
+
+[node name="Key" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(476, 423)
+
+[node name="Key2" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(670, 419)
+
+[node name="Key3" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(476, 590)
+
+[node name="Key4" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(670, 586)
+
+[node name="Key5" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(82, 430)
+
+[node name="Key6" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(276, 426)
+
+[node name="Key7" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(82, 597)
+
+[node name="Key8" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(276, 593)
+
+[node name="Key9" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(481, 69)
+
+[node name="Key10" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(675, 65)
+
+[node name="Key11" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(481, 236)
+
+[node name="Key12" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(675, 232)
+
+[node name="Key13" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(87, 76)
+
+[node name="Key14" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(281, 72)
+
+[node name="Key15" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(87, 243)
+
+[node name="Key16" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(281, 239)
+
+[node name="Key17" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1257, 64)
+
+[node name="Key18" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1451, 60)
+
+[node name="Key19" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1257, 231)
+
+[node name="Key20" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1451, 227)
+
+[node name="Key21" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(863, 71)
+
+[node name="Key22" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1057, 67)
+
+[node name="Key23" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(863, 238)
+
+[node name="Key24" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1057, 234)
+
+[node name="Key25" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1264, 412)
+
+[node name="Key26" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1458, 408)
+
+[node name="Key27" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1264, 579)
+
+[node name="Key28" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1458, 575)
+
+[node name="Key29" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(870, 419)
+
+[node name="Key30" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1064, 415)
+
+[node name="Key31" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(870, 586)
+
+[node name="Key32" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1064, 582)
+
+[node name="Key33" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(476, 822)
+
+[node name="Key34" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(670, 818)
+
+[node name="Key35" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(476, 989)
+
+[node name="Key36" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(670, 985)
+
+[node name="Key37" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(82, 829)
+
+[node name="Key38" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(276, 825)
+
+[node name="Key39" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(82, 996)
+
+[node name="Key40" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(276, 992)
+
+[node name="Key41" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(481, 468)
+
+[node name="Key42" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(675, 464)
+
+[node name="Key43" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(481, 635)
+
+[node name="Key44" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(675, 631)
+
+[node name="Key45" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(87, 475)
+
+[node name="Key46" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(281, 471)
+
+[node name="Key47" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(87, 642)
+
+[node name="Key48" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(281, 638)
+
+[node name="Key49" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1257, 463)
+
+[node name="Key50" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1451, 459)
+
+[node name="Key51" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1257, 630)
+
+[node name="Key52" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1451, 626)
+
+[node name="Key53" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(863, 470)
+
+[node name="Key54" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1057, 466)
+
+[node name="Key55" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(863, 637)
+
+[node name="Key56" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1057, 633)
+
+[node name="Key57" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1264, 811)
+
+[node name="Key58" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1458, 807)
+
+[node name="Key59" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1264, 978)
+
+[node name="Key60" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1458, 974)
+
+[node name="Key61" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(870, 818)
+
+[node name="Key62" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1064, 814)
+
+[node name="Key63" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(870, 985)
+
+[node name="Key64" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1064, 981)
+
+[node name="Key65" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(803, 423)
+
+[node name="Key66" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(997, 419)
+
+[node name="Key67" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(803, 590)
+
+[node name="Key68" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(997, 586)
+
+[node name="Key69" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(409, 430)
+
+[node name="Key70" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(603, 426)
+
+[node name="Key71" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(409, 597)
+
+[node name="Key72" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(603, 593)
+
+[node name="Key73" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(808, 69)
+
+[node name="Key74" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1002, 65)
+
+[node name="Key75" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(808, 236)
+
+[node name="Key76" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1002, 232)
+
+[node name="Key77" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(414, 76)
+
+[node name="Key78" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(608, 72)
+
+[node name="Key79" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(414, 243)
+
+[node name="Key80" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(608, 239)
+
+[node name="Key81" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1584, 64)
+
+[node name="Key82" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1778, 60)
+
+[node name="Key83" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1584, 231)
+
+[node name="Key84" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1778, 227)
+
+[node name="Key85" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1190, 71)
+
+[node name="Key86" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1384, 67)
+
+[node name="Key87" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1190, 238)
+
+[node name="Key88" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1384, 234)
+
+[node name="Key89" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1591, 412)
+
+[node name="Key90" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1785, 408)
+
+[node name="Key91" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1591, 579)
+
+[node name="Key92" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1785, 575)
+
+[node name="Key93" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1197, 419)
+
+[node name="Key94" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1391, 415)
+
+[node name="Key95" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1197, 586)
+
+[node name="Key96" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1391, 582)
+
+[node name="Key97" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(803, 822)
+
+[node name="Key98" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(997, 818)
+
+[node name="Key99" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(803, 989)
+
+[node name="Key100" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(997, 985)
+
+[node name="Key101" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(409, 829)
+
+[node name="Key102" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(603, 825)
+
+[node name="Key103" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(409, 996)
+
+[node name="Key104" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(603, 992)
+
+[node name="Key105" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(808, 468)
+
+[node name="Key106" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1002, 464)
+
+[node name="Key107" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(808, 635)
+
+[node name="Key108" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1002, 631)
+
+[node name="Key109" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(414, 475)
+
+[node name="Key110" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(608, 471)
+
+[node name="Key111" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(414, 642)
+
+[node name="Key112" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(608, 638)
+
+[node name="Key113" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1584, 463)
+
+[node name="Key114" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1778, 459)
+
+[node name="Key115" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1584, 630)
+
+[node name="Key116" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1778, 626)
+
+[node name="Key117" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1190, 470)
+
+[node name="Key118" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1384, 466)
+
+[node name="Key119" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1190, 637)
+
+[node name="Key120" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1384, 633)
+
+[node name="Key121" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1591, 811)
+
+[node name="Key122" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1785, 807)
+
+[node name="Key123" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1591, 978)
+
+[node name="Key124" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1785, 974)
+
+[node name="Key125" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1197, 818)
+
+[node name="Key126" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1391, 814)
+
+[node name="Key127" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1197, 985)
+
+[node name="Key128" parent="." instance=ExtResource("1_30id6")]
+position = Vector2(1391, 981)

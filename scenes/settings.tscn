@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://t2lrka8lh83n"]
+
+[ext_resource type="Script" uid="uid://c6ucyc56wyxg7" path="res://scripts/settings.gd" id="1_5p8wc"]
+
+[sub_resource type="GDScript" id="GDScript_36l1p"]
+script/source = "extends Button
+
+
+
+func _on_pressed() -> void:
+	Global.save_json(Global.config,Global.gamepath+\"/savedata/config.json\")
+	get_tree().change_scene_to_file(\"res://scenes/mainmenu.tscn\")
+"
+
+[node name="Settings" type="Node2D" unique_id=942619879]
+script = ExtResource("1_5p8wc")
+
+[node name="Button3" type="Button" parent="." unique_id=719864738]
+offset_left = 741.0
+offset_top = 894.0
+offset_right = 1146.0
+offset_bottom = 1002.0
+theme_override_font_sizes/font_size = 64
+text = "Back"
+script = SubResource("GDScript_36l1p")
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="." unique_id=246554119]
+offset_left = 561.0
+offset_top = 229.0
+offset_right = 919.0
+offset_bottom = 288.0
+theme_override_font_sizes/font_size = 48
+text = "Master Volume:"
+
+[node name="Label2" type="Label" parent="." unique_id=1760085852]
+offset_left = 561.0
+offset_top = 306.0
+offset_right = 919.0
+offset_bottom = 365.0
+theme_override_font_sizes/font_size = 48
+text = "Music Volume:"
+horizontal_alignment = 2
+
+[node name="Label3" type="Label" parent="." unique_id=715177936]
+offset_left = 561.0
+offset_top = 379.0
+offset_right = 919.0
+offset_bottom = 438.0
+theme_override_font_sizes/font_size = 48
+text = "SFX Volume:"
+horizontal_alignment = 2
+
+[node name="mastervol" type="HSlider" parent="." unique_id=1992590014]
+offset_left = 943.0
+offset_top = 254.0
+offset_right = 1304.0
+offset_bottom = 270.0
+max_value = 1.0
+step = 0.01
+
+[node name="musvol" type="HSlider" parent="." unique_id=1215369463]
+offset_left = 943.0
+offset_top = 329.0
+offset_right = 1304.0
+offset_bottom = 345.0
+max_value = 1.0
+step = 0.01
+
+[node name="sndvol" type="HSlider" parent="." unique_id=350675935]
+offset_left = 943.0
+offset_top = 405.0
+offset_right = 1304.0
+offset_bottom = 421.0
+max_value = 1.0
+step = 0.01
+
+[node name="Label4" type="Label" parent="." unique_id=1018601849]
+offset_left = 762.0
+offset_top = 492.0
+offset_right = 1358.0
+offset_bottom = 551.0
+theme_override_font_sizes/font_size = 32
+text = "(more settings to come :p)"
+
+[connection signal="pressed" from="Button3" to="Button3" method="_on_pressed"]

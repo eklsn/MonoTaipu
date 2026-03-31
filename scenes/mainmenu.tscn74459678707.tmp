@@ -1,0 +1,333 @@
+[gd_scene load_steps=10 format=3 uid="uid://d2gt7olnvvoax"]
+
+[ext_resource type="Texture2D" uid="uid://c0iehbbfam7uk" path="res://sprites/keysq/keysq_main.png" id="1_5mbse"]
+[ext_resource type="Script" uid="uid://w8dc4ms6esyw" path="res://scripts/wave.gd" id="1_natt5"]
+[ext_resource type="Script" uid="uid://cuyrtx4j3jgsa" path="res://scripts/mainmenu.gd" id="1_s5g8n"]
+[ext_resource type="Texture2D" uid="uid://cau16l0d655dt" path="res://sprites/keysq/ico_playmode.png" id="3_r3g3c"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/gamevfx.gd" id="5_7yvfd"]
+
+[sub_resource type="GDScript" id="GDScript_5mbse"]
+script/source = "extends Button
+
+
+
+func _on_pressed() -> void:
+	get_tree().change_scene_to_file(\"res://scenes/levelselect.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_natt5"]
+script/source = "extends Button
+
+
+
+func _on_pressed() -> void:
+	Globalaud.get_node(\"fader\").fade(-0.005,db_to_linear(Globalaud.get_node(\"Music\").volume_db),0)
+	get_tree().change_scene_to_file(\"res://scenes/editor.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_7q3kq"]
+script/source = "extends RichTextLabel
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	text=\"[\"+Global.build+\"] \"+Global.buildnum
+"
+
+[sub_resource type="GDScript" id="GDScript_r3g3c"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v):
+		tile_texture = v
+		reset_tiles()
+
+@export var spacing := Vector2.ZERO:
+	set(v):
+		spacing = v
+		dirty = true
+
+@export var sprite_scale := Vector2.ONE:
+	set(v):
+		sprite_scale = v
+		dirty = true
+
+@export_enum(\"wave\", \"sinline\", \"ladder\") var animation := \"wave\":
+	set(v):
+		if v != animation:
+			start_animation_blend()
+			current_animation = v
+		animation = v
+
+@export var wave_amp := 20.0
+@export var wave_speed := 2.0
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1, -1]
+
+# NEW: fixed cols and rows
+@export var cols := 10
+@export var rows := 10
+
+var tiles = {}  # Dictionary<Vector2i, Sprite2D>
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var time = 0.0
+var dirty = true
+
+var current_animation := \"wave\"
+var animation_blend_time := 0.5
+var animation_blend_progress := 1.0
+var blend_start_offsets = {}
+
+func _ready():
+	reset_tiles()
+	tile_texture = ImageTexture.create_from_image(Image.load_from_file(Skins.get_resource_path(\"stroke_10px_gray.png\")))
+
+func _process(delta):
+	time += delta
+
+	if animation_blend_progress < 1.0:
+		animation_blend_progress = min(animation_blend_progress + delta / animation_blend_time, 1.0)
+
+	if dirty:
+		update_tiles()
+	update_positions()
+
+func reset_tiles():
+	for tile in tiles.values():
+		tile.queue_free()
+	tiles.clear()
+	dirty = true
+
+func update_tiles():
+	if not tile_texture:
+		return
+
+	tile_size = tile_texture.get_size()
+	tile_step = tile_size * sprite_scale + spacing
+
+	# Center origin, so we offset by half of total grid
+	var half_grid = Vector2(cols, rows) * 0.5 * tile_step
+
+	for x in range(-cols/2, cols/2 + cols % 2):
+		for y in range(-rows/2, rows/2 + rows % 2):
+			var key = Vector2i(x, y)
+			if tiles.has(key):
+				continue
+
+			var sprite = Sprite2D.new()
+			sprite.texture = tile_texture
+			sprite.scale = sprite_scale
+			sprite.set_meta(\"x\", x)
+			sprite.set_meta(\"y\", y)
+			add_child(sprite)
+			tiles[key] = sprite
+
+	dirty = false
+
+func get_animation_offset(anim: String, x: int, y: int) -> Vector2:
+	match anim:
+		\"wave\":
+			return Vector2(0, sin(time * wave_speed + x * 0.5) * wave_amp)
+		\"sinline\":
+			return Vector2(0, sin(time * wave_speed + y * 0.5) * wave_amp)
+		\"ladder\":
+			var dir = ladder_pattern[x % ladder_pattern.size()]
+			var h = tile_step.y
+			return Vector2(0, fmod(time * ladder_speed * dir, h) - h)
+	return Vector2.ZERO
+
+func update_positions():
+	# Center of Node2D
+	var center = Vector2.ZERO
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		var target_offset = get_animation_offset(current_animation, x, y)
+
+		if animation_blend_progress < 1.0 and blend_start_offsets.has(sprite):
+			var from_offset = blend_start_offsets[sprite]
+			sprite.position = base + from_offset.lerp(target_offset, animation_blend_progress)
+		else:
+			sprite.position = base + target_offset
+
+		if sprite.scale != sprite_scale:
+			sprite.scale = sprite_scale
+
+func start_animation_blend():
+	blend_start_offsets.clear()
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		blend_start_offsets[sprite] = sprite.position - base
+
+	animation_blend_progress = 0.0
+"
+
+[node name="Mainmenu" type="Node2D"]
+script = ExtResource("1_s5g8n")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 236.0
+offset_top = 65.0
+offset_right = 1691.0
+offset_bottom = 328.0
+theme_override_font_sizes/normal_font_size = 144
+bbcode_enabled = true
+text = "[font_size=120]Welcome to"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="."]
+offset_left = 382.0
+offset_top = 834.0
+offset_right = 787.0
+offset_bottom = 942.0
+theme_override_font_sizes/font_size = 64
+text = "Play Mode"
+script = SubResource("GDScript_5mbse")
+metadata/_edit_use_anchors_ = true
+
+[node name="Button2" type="Button" parent="."]
+offset_left = 1111.0
+offset_top = 834.0
+offset_right = 1516.0
+offset_bottom = 942.0
+theme_override_font_sizes/font_size = 64
+text = "Editor Mode"
+script = SubResource("GDScript_natt5")
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="."]
+offset_left = 687.0
+offset_top = 636.0
+offset_right = 1225.0
+offset_bottom = 830.0
+theme_override_font_sizes/normal_font_size = 32
+text = "[b??] ??????"
+horizontal_alignment = 1
+script = SubResource("GDScript_7q3kq")
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="."]
+offset_left = 687.0
+offset_top = 723.0
+offset_right = 1225.0
+offset_bottom = 917.0
+theme_override_font_sizes/normal_font_size = 32
+text = "Made by EKLSN, 2026 <3"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="logo" type="Node2D" parent="."]
+position = Vector2(313, 0)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_natt5")
+amplitude = 30.0
+spacing = 1.0
+
+[node name="T" type="Sprite2D" parent="logo"]
+position = Vector2(199, 907)
+texture = ExtResource("1_5mbse")
+
+[node name="Label" type="Label" parent="logo/T"]
+offset_left = -92.333374
+offset_top = -163.66667
+offset_right = 83.666626
+offset_bottom = 184.33333
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 288
+text = "T"
+metadata/_edit_use_anchors_ = true
+
+[node name="A" type="Sprite2D" parent="logo"]
+position = Vector2(751, 907)
+texture = ExtResource("1_5mbse")
+
+[node name="Label2" type="Label" parent="logo/A"]
+offset_left = -97.66675
+offset_top = -163.66675
+offset_right = 103.33325
+offset_bottom = 184.33325
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 288
+text = "A"
+metadata/_edit_use_anchors_ = true
+
+[node name="I" type="Sprite2D" parent="logo"]
+position = Vector2(1303, 907)
+texture = ExtResource("1_5mbse")
+
+[node name="Label3" type="Label" parent="logo/I"]
+offset_left = -39.666748
+offset_top = -163.66675
+offset_right = 161.33325
+offset_bottom = 184.33325
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 288
+text = "I"
+metadata/_edit_use_anchors_ = true
+
+[node name="P" type="Sprite2D" parent="logo"]
+position = Vector2(1855, 907)
+texture = ExtResource("1_5mbse")
+
+[node name="Label4" type="Label" parent="logo/P"]
+offset_left = -81.66675
+offset_top = -163.66675
+offset_right = 119.33325
+offset_bottom = 184.33325
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 288
+text = "P"
+metadata/_edit_use_anchors_ = true
+
+[node name="U" type="Sprite2D" parent="logo"]
+position = Vector2(2407, 907)
+texture = ExtResource("1_5mbse")
+
+[node name="Label5" type="Label" parent="logo/U"]
+offset_left = -103.66699
+offset_top = -163.66675
+offset_right = 114.33301
+offset_bottom = 184.33325
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 288
+text = "U"
+metadata/_edit_use_anchors_ = true
+
+[node name="Node2D" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.24313726)
+z_index = -100
+position = Vector2(956, 540)
+script = SubResource("GDScript_r3g3c")
+spacing = Vector2(20, 20)
+sprite_scale = Vector2(0.5, 0.5)
+animation = "ladder"
+
+[node name="TextureButton" type="TextureButton" parent="."]
+visible = false
+offset_left = 454.0
+offset_top = 755.0
+offset_right = 966.0
+offset_bottom = 1267.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("3_r3g3c")
+
+[node name="fade" type="Node2D" parent="."]
+visible = false
+script = ExtResource("5_7yvfd")
+
+[node name="fade" type="ColorRect" parent="fade"]
+offset_right = 1920.0
+offset_bottom = 1085.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
+[connection signal="pressed" from="Button2" to="Button2" method="_on_pressed"]

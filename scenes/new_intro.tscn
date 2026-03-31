@@ -1,0 +1,220 @@
+[gd_scene load_steps=5 format=3 uid="uid://c65rbqsk8663b"]
+
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/services/gamevfx.gd" id="1_p1eq3"]
+
+[sub_resource type="GDScript" id="GDScript_iqs6h"]
+script/source = "extends Node2D
+var skipped = false
+func _ready() -> void:
+	$RichTextLabel.do_scale(Vector2(1.25,1.25),\"lerp\",0.2)
+	$ColorRect.anim_fade()
+	await get_tree().create_timer(3).timeout
+	$ColorRect.anim_fade(0.005)
+	await get_tree().create_timer(4).timeout
+	get_tree().change_scene_to_file(\"res://scenes/mainmenu.tscn\")
+
+func _input(event):
+	if event is InputEventKey:
+		if event.pressed:
+			if event.keycode == KEY_ENTER:
+				get_tree().change_scene_to_file(\"res://scenes/mainmenu.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_jrsgf"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v):
+		tile_texture = v
+		reset_tiles()
+
+@export var spacing := Vector2.ZERO:
+	set(v):
+		spacing = v
+		dirty = true
+
+@export var sprite_scale := Vector2.ONE:
+	set(v):
+		sprite_scale = v
+		dirty = true
+
+@export_enum(\"wave\", \"sinline\", \"ladder\") var animation := \"wave\":
+	set(v):
+		if v != animation:
+			start_animation_blend()
+			current_animation = v
+		animation = v
+
+@export var wave_amp := 20.0
+@export var wave_speed := 2.0
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1, -1]
+
+# NEW: fixed cols and rows
+@export var cols := 10
+@export var rows := 10
+
+var tiles = {}  # Dictionary<Vector2i, Sprite2D>
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var time = 0.0
+var dirty = true
+
+var current_animation := \"wave\"
+var animation_blend_time := 0.5
+var animation_blend_progress := 1.0
+var blend_start_offsets = {}
+
+func _ready():
+	reset_tiles()
+	var file = FileAccess.open(Global.gamepath + \"/skins/skin.txt\", FileAccess.READ)
+	if file != null:
+		var skin_name = file.get_as_text().strip_edges()
+		print(skin_name)
+		file.close()
+		var texture_path = Global.gamepath + \"/skins/\" + skin_name + \"/\"
+		tile_texture = ImageTexture.create_from_image(Image.load_from_file(texture_path+\"stroke_10px_gray.png\"))
+
+func _process(delta):
+	sprite_scale = lerp(sprite_scale,Vector2(0.6,0.6),1*delta)
+	time += delta
+
+	if animation_blend_progress < 1.0:
+		animation_blend_progress = min(animation_blend_progress + delta / animation_blend_time, 1.0)
+
+	if dirty:
+		update_tiles()
+	update_positions()
+
+func reset_tiles():
+	for tile in tiles.values():
+		tile.queue_free()
+	tiles.clear()
+	dirty = true
+
+func update_tiles():
+	if not tile_texture:
+		return
+
+	tile_size = tile_texture.get_size()
+	tile_step = tile_size * sprite_scale + spacing
+
+	# Center origin, so we offset by half of total grid
+	var half_grid = Vector2(cols, rows) * 0.5 * tile_step
+
+	for x in range(-cols/2, cols/2 + cols % 2):
+		for y in range(-rows/2, rows/2 + rows % 2):
+			var key = Vector2i(x, y)
+			if tiles.has(key):
+				continue
+
+			var sprite = Sprite2D.new()
+			sprite.texture = tile_texture
+			sprite.scale = sprite_scale
+			sprite.set_meta(\"x\", x)
+			sprite.set_meta(\"y\", y)
+			add_child(sprite)
+			tiles[key] = sprite
+
+	dirty = false
+
+func get_animation_offset(anim: String, x: int, y: int) -> Vector2:
+	match anim:
+		\"wave\":
+			return Vector2(0, sin(time * wave_speed + x * 0.5) * wave_amp)
+		\"sinline\":
+			return Vector2(0, sin(time * wave_speed + y * 0.5) * wave_amp)
+		\"ladder\":
+			var dir = ladder_pattern[x % ladder_pattern.size()]
+			var h = tile_step.y
+			return Vector2(0, fmod(time * ladder_speed * dir, h) - h)
+	return Vector2.ZERO
+
+func update_positions():
+	# Center of Node2D
+	var center = Vector2.ZERO
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		var target_offset = get_animation_offset(current_animation, x, y)
+
+		if animation_blend_progress < 1.0 and blend_start_offsets.has(sprite):
+			var from_offset = blend_start_offsets[sprite]
+			sprite.position = base + from_offset.lerp(target_offset, animation_blend_progress)
+		else:
+			sprite.position = base + target_offset
+
+		if sprite.scale != sprite_scale:
+			sprite.scale = sprite_scale
+
+func start_animation_blend():
+	blend_start_offsets.clear()
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		blend_start_offsets[sprite] = sprite.position - base
+
+	animation_blend_progress = 0.0
+"
+
+[sub_resource type="Resource" id="Resource_5ye2x"]
+metadata/__load_path__ = "res://sprites/keysq/stroke_10px_gray.png"
+
+[node name="NewIntro" type="Node2D"]
+script = SubResource("GDScript_iqs6h")
+
+[node name="grid" type="Node2D" parent="."]
+
+[node name="Node2D" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.5411765)
+z_index = -10
+position = Vector2(956, 540)
+script = SubResource("GDScript_jrsgf")
+tile_texture = SubResource("Resource_5ye2x")
+spacing = Vector2(15, 15)
+sprite_scale = Vector2(0.25, 0.25)
+animation = "ladder"
+cols = 15
+
+[node name="ColorRect" type="Node2D" parent="."]
+z_index = 10
+script = ExtResource("1_p1eq3")
+
+[node name="ColorRect" type="ColorRect" parent="ColorRect"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0, 0, 0, 1)
+
+[node name="RichTextLabel" type="Node2D" parent="."]
+position = Vector2(953, 543)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_p1eq3")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="RichTextLabel"]
+offset_left = -955.0
+offset_top = -555.0
+offset_right = 966.0
+offset_bottom = 526.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 5
+theme_override_font_sizes/normal_font_size = 128
+bbcode_enabled = true
+text = "[font_size=76]A game by
+[font_size=60] 
+[font_size=144][wave amp=144 freq=2]EKLSN[/wave]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="mode" type="NativeConfirmationDialog" parent="."]
+buttons_texts = 1
+title = "Taipu"
+dialog_text = "Y = Play Mode
+N = Editor Mode"
+
+[connection signal="canceled" from="mode" to="." method="_on_native_confirmation_dialog_canceled"]
+[connection signal="confirmed" from="mode" to="." method="_on_native_confirmation_dialog_confirmed"]

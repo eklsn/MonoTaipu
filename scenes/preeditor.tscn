@@ -1,0 +1,174 @@
+[gd_scene format=3 uid="uid://bqc5r5xh0ksb6"]
+
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/services/gamevfx.gd" id="1_ymoak"]
+
+[sub_resource type="GDScript" id="GDScript_uo6ex"]
+script/source = "extends Button
+
+func _on_pressed() -> void:
+	var lvlmeta = {
+				\"name\" : \"\",
+				\"song_author\" : \"\",
+				\"lvl_author\" : \"\",
+				\"audiofile\" : \"\",
+				\"videofile\" : \"\",
+				\"imagefile\" : \"\",
+				\"pre_ring_time\" : 0.2,
+				\"ring_time\" : 0.5,
+				\"hit_timeframe\" : 0.2,
+				\"readscheme\" : 0,
+				\"minus_hp_on_miss\" : 25,
+				\"minus_hp_idle\" : 0.5,
+				\"exportbuild\" : Global.build,
+				\"znote\" : \"\"
+			}
+	var savekeys = []
+	savekeys.insert(0,lvlmeta)
+	savekeys = JSON.stringify(savekeys,\"\\t\")
+	var path = await Global.save_var_with_dialog(savekeys)
+	await get_tree().create_timer(0.03).timeout
+	Global.KEYMAN_LEVEL = path
+	print(path)
+	get_tree().change_scene_to_file(\"res://scenes/editor.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_8bjda"]
+script/source = "extends Button
+
+
+
+func _on_pressed() -> void:
+	Global.save_json(Global.config,Global.gamepath+\"/savedata/config.json\")
+	get_tree().change_scene_to_file(\"res://scenes/mainmenu.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_ymoak"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v): tile_texture=v; reset_tiles()
+@export var spacing := Vector2.ZERO:
+	set(v): spacing=v; update_tiles()
+@export var sprite_scale := Vector2.ONE:
+	set(v): sprite_scale=v; update_tiles()
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1,-1]
+@export var cols := 10
+@export var rows := 10
+
+var tiles = {}
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var time = 0.0
+
+func _ready():
+	reset_tiles()
+	if not tile_texture: tile_texture=ImageTexture.create_from_image(Image.load_from_file(Skins.get_resource_path(\"stroke_10px_gray.png\")))
+
+func _process(delta):
+	time+=delta
+	update_positions()
+
+func reset_tiles():
+	for t in tiles.values(): t.queue_free()
+	tiles.clear()
+	update_tiles()
+
+func update_tiles():
+	if not tile_texture: return
+	tile_size=tile_texture.get_size()
+	tile_step=tile_size*sprite_scale+spacing
+	for x in range(-cols/2,cols/2+cols%2):
+		for y in range(-rows/2,rows/2+rows%2):
+			var k=Vector2i(x,y)
+			if tiles.has(k): continue
+			var s=Sprite2D.new()
+			s.texture=tile_texture
+			s.scale=sprite_scale
+			s.set_meta(\"x\",x)
+			s.set_meta(\"y\",y)
+			add_child(s)
+			tiles[k]=s
+
+func update_positions():
+	for s in tiles.values():
+		var x=s.get_meta(\"x\")
+		var y=s.get_meta(\"y\")
+		var base=Vector2(x,y)*tile_step
+		var dir=ladder_pattern[x%ladder_pattern.size()]
+		var h=tile_step.y
+		s.position=base+Vector2(0,fmod(time*ladder_speed*dir,h)-h)
+		if s.scale!=sprite_scale: s.scale=sprite_scale
+"
+
+[sub_resource type="GDScript" id="GDScript_ssg7n"]
+script/source = "extends Button
+
+func _on_pressed() -> void:
+	get_tree().current_scene.get_node(\"fade\").anim_fade(0.1)
+	Global.picker_mode = \"editor\"
+	await get_tree().create_timer(0.03).timeout
+	get_tree().change_scene_to_file(\"res://scenes/levelselect.tscn\")
+"
+
+[node name="Preeditor" type="Node2D" unique_id=166676661]
+
+[node name="Label" type="Label" parent="." unique_id=215378213]
+offset_left = 635.0
+offset_top = 418.0
+offset_right = 1251.0
+offset_bottom = 477.0
+theme_override_font_sizes/font_size = 48
+text = "What would you like to do?"
+
+[node name="Button" type="Button" parent="." unique_id=1263445864]
+offset_left = 434.0
+offset_top = 532.0
+offset_right = 909.0
+offset_bottom = 623.0
+theme_override_font_sizes/font_size = 48
+text = "Create a Level"
+script = SubResource("GDScript_uo6ex")
+
+[node name="Button3" type="Button" parent="." unique_id=1591261151]
+offset_left = 741.0
+offset_top = 894.0
+offset_right = 1146.0
+offset_bottom = 1002.0
+theme_override_font_sizes/font_size = 64
+text = "Back"
+script = SubResource("GDScript_8bjda")
+metadata/_edit_use_anchors_ = true
+
+[node name="Node2D" type="Node2D" parent="." unique_id=193398938]
+modulate = Color(1, 1, 1, 0.24313726)
+z_index = -100
+position = Vector2(956, 540)
+script = SubResource("GDScript_ymoak")
+spacing = Vector2(20, 20)
+sprite_scale = Vector2(0.5, 0.5)
+
+[node name="Button4" type="Button" parent="." unique_id=1213439716]
+offset_left = 953.0
+offset_top = 533.0
+offset_right = 1428.0
+offset_bottom = 624.0
+theme_override_font_sizes/font_size = 48
+text = "Load a level"
+script = SubResource("GDScript_ssg7n")
+
+[node name="fade" type="Node2D" parent="." unique_id=1599769379]
+visible = false
+z_index = 2000
+position = Vector2(962, 530)
+script = ExtResource("1_ymoak")
+
+[node name="fade" type="ColorRect" parent="fade" unique_id=1999590239]
+offset_right = 1920.0
+offset_bottom = 1085.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
+[connection signal="pressed" from="Button3" to="Button3" method="_on_pressed"]
+[connection signal="pressed" from="Button4" to="Button4" method="_on_pressed"]

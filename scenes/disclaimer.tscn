@@ -1,0 +1,124 @@
+[gd_scene format=3 uid="uid://ch7oo1s4thx0w"]
+
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/services/gamevfx.gd" id="1_ph5s3"]
+
+[sub_resource type="GDScript" id="GDScript_ph5s3"]
+script/source = "extends Button
+
+
+
+func _on_pressed() -> void:
+	get_tree().change_scene_to_file(\"res://scenes/mainmenu.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_ymoak"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v): tile_texture=v; reset_tiles()
+@export var spacing := Vector2.ZERO:
+	set(v): spacing=v; update_tiles()
+@export var sprite_scale := Vector2.ONE:
+	set(v): sprite_scale=v; update_tiles()
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1,-1]
+@export var cols := 10
+@export var rows := 10
+
+var tiles = {}
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var time = 0.0
+
+func _ready():
+	reset_tiles()
+	if not tile_texture: tile_texture=ImageTexture.create_from_image(Image.load_from_file(Skins.get_resource_path(\"stroke_10px_gray.png\")))
+
+func _process(delta):
+	time+=delta
+	update_positions()
+
+func reset_tiles():
+	for t in tiles.values(): t.queue_free()
+	tiles.clear()
+	update_tiles()
+
+func update_tiles():
+	if not tile_texture: return
+	tile_size=tile_texture.get_size()
+	tile_step=tile_size*sprite_scale+spacing
+	for x in range(-cols/2,cols/2+cols%2):
+		for y in range(-rows/2,rows/2+rows%2):
+			var k=Vector2i(x,y)
+			if tiles.has(k): continue
+			var s=Sprite2D.new()
+			s.texture=tile_texture
+			s.scale=sprite_scale
+			s.set_meta(\"x\",x)
+			s.set_meta(\"y\",y)
+			add_child(s)
+			tiles[k]=s
+
+func update_positions():
+	for s in tiles.values():
+		var x=s.get_meta(\"x\")
+		var y=s.get_meta(\"y\")
+		var base=Vector2(x,y)*tile_step
+		var dir=ladder_pattern[x%ladder_pattern.size()]
+		var h=tile_step.y
+		s.position=base+Vector2(0,fmod(time*ladder_speed*dir,h)-h)
+		if s.scale!=sprite_scale: s.scale=sprite_scale
+"
+
+[node name="Preeditor" type="Node2D" unique_id=166676661]
+
+[node name="Label" type="Label" parent="." unique_id=215378213]
+offset_left = 223.0
+offset_top = 156.0
+offset_right = 1672.0
+offset_bottom = 835.0
+theme_override_font_sizes/font_size = 48
+text = "Warning!
+
+Due to critical audio latency issues, this branch
+of Taipu Project is deprecated.
+
+It is recommended to move to the MonoGame branch
+of Taipu Project, when it releases.
+
+MonoGame version WILL support all maps made in this version.
+
+Thanks for playing <3"
+horizontal_alignment = 1
+
+[node name="Button3" type="Button" parent="." unique_id=1591261151]
+offset_left = 741.0
+offset_top = 894.0
+offset_right = 1146.0
+offset_bottom = 1002.0
+theme_override_font_sizes/font_size = 64
+text = "Continue"
+script = SubResource("GDScript_ph5s3")
+metadata/_edit_use_anchors_ = true
+
+[node name="Node2D" type="Node2D" parent="." unique_id=193398938]
+modulate = Color(1, 1, 1, 0.24313726)
+z_index = -100
+position = Vector2(956, 540)
+script = SubResource("GDScript_ymoak")
+spacing = Vector2(20, 20)
+sprite_scale = Vector2(0.5, 0.5)
+
+[node name="fade" type="Node2D" parent="." unique_id=1599769379]
+visible = false
+z_index = 2000
+position = Vector2(962, 530)
+script = ExtResource("1_ph5s3")
+
+[node name="fade" type="ColorRect" parent="fade" unique_id=1999590239]
+offset_right = 1920.0
+offset_bottom = 1085.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="Button3" to="Button3" method="_on_pressed"]

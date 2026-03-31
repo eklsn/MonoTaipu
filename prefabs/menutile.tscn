@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://5huwgikiwwiy"]
+
+[ext_resource type="Texture2D" uid="uid://bce466y6oi3aj" path="res://sprites/keysq/ico_lvldefault.png" id="1_c7a7s"]
+[ext_resource type="Shader" uid="uid://fl1ivrmi1a0v" path="res://prefabs/menutile.gdshader" id="1_gb6hn"]
+[ext_resource type="Texture2D" uid="uid://dbl16n53kkvkt" path="res://sprites/keysq/keysq_mask.png" id="2_76nm3"]
+[ext_resource type="Script" uid="uid://1enpsm3ie20p" path="res://scripts/ui/menutile.gd" id="2_gb6hn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gb6hn"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_gb6hn")
+shader_parameter/texture_albedo = ExtResource("1_c7a7s")
+shader_parameter/mask_tex = ExtResource("2_76nm3")
+shader_parameter/dim = 1.0
+
+[sub_resource type="GDScript" id="GDScript_gb6hn"]
+script/source = "extends Sprite3D
+
+func _process(delta: float) -> void:
+	if texture != get_parent().texture:
+		texture = get_parent().texture
+		material_override = get_parent().material_override.duplicate()
+		material_override.set_shader_parameter(\"dim\", 0.3)
+		pixel_size = get_parent().pixel_size
+"
+
+[node name="Sprite3D" type="Sprite3D"]
+transform = Transform3D(0.025437638, 0, 0, 0, 0.025437638, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_gb6hn")
+transparent = false
+double_sided = false
+texture = ExtResource("1_c7a7s")
+script = ExtResource("2_gb6hn")
+
+[node name="highlight" type="Sprite3D" parent="."]
+transform = Transform3D(1.01, 0, 0, 0, 1.01, 0, 0, 0, 1.01, 0, 0.006862402, 0.0006153956)
+
+[node name="mirror" type="Sprite3D" parent="."]
+transform = Transform3D(1, 1.509958e-07, 0, 1.509958e-07, -1, 0, 0, 0, 1, 0, -5.08459, 0.0006153956)
+modulate = Color(0.49803922, 0.49803922, 0.49803922, 1)
+texture = ExtResource("1_c7a7s")
+script = SubResource("GDScript_gb6hn")

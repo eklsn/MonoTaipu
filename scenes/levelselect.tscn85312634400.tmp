@@ -1,0 +1,190 @@
+[gd_scene load_steps=5 format=3 uid="uid://rmak2nmut86x"]
+
+[ext_resource type="Script" uid="uid://bbn2e62cfw71h" path="res://scripts/levelselect.gd" id="1_xuh2y"]
+[ext_resource type="Script" uid="uid://kfdq1b0ar74s" path="res://scripts/lvlflow.gd" id="2_vttqt"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_pneju"]
+viewport_path = NodePath("viewport")
+
+[sub_resource type="GDScript" id="GDScript_vttqt"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v):
+		tile_texture = v
+		reset_tiles()
+
+@export var spacing := Vector2.ZERO:
+	set(v):
+		spacing = v
+		dirty = true
+
+@export var sprite_scale := Vector2.ONE:
+	set(v):
+		sprite_scale = v
+		dirty = true
+
+@export_enum(\"wave\", \"sinline\", \"ladder\") var animation := \"wave\":
+	set(v):
+		if v != animation:
+			start_animation_blend()
+			current_animation = v
+		animation = v
+
+@export var wave_amp := 20.0
+@export var wave_speed := 2.0
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1, -1]
+
+# NEW: fixed cols and rows
+@export var cols := 10
+@export var rows := 10
+
+var tiles = {}  # Dictionary<Vector2i, Sprite2D>
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var time = 0.0
+var dirty = true
+
+var current_animation := \"wave\"
+var animation_blend_time := 0.5
+var animation_blend_progress := 1.0
+var blend_start_offsets = {}
+
+func _ready():
+	reset_tiles()
+	var file = FileAccess.open(Global.gamepath + \"/skins/skin.txt\", FileAccess.READ)
+	if file != null:
+		var skin_name = file.get_as_text().strip_edges()
+		print(skin_name)
+		file.close()
+		var texture_path = Global.gamepath + \"/skins/\" + skin_name + \"/\"
+		tile_texture = ImageTexture.create_from_image(Image.load_from_file(texture_path+\"stroke_10px_gray.png\"))
+
+func _process(delta):
+	time += delta
+
+	if animation_blend_progress < 1.0:
+		animation_blend_progress = min(animation_blend_progress + delta / animation_blend_time, 1.0)
+
+	if dirty:
+		update_tiles()
+	update_positions()
+
+func reset_tiles():
+	for tile in tiles.values():
+		tile.queue_free()
+	tiles.clear()
+	dirty = true
+
+func update_tiles():
+	if not tile_texture:
+		return
+
+	tile_size = tile_texture.get_size()
+	tile_step = tile_size * sprite_scale + spacing
+
+	# Center origin, so we offset by half of total grid
+	var half_grid = Vector2(cols, rows) * 0.5 * tile_step
+
+	for x in range(-cols/2, cols/2 + cols % 2):
+		for y in range(-rows/2, rows/2 + rows % 2):
+			var key = Vector2i(x, y)
+			if tiles.has(key):
+				continue
+
+			var sprite = Sprite2D.new()
+			sprite.texture = tile_texture
+			sprite.scale = sprite_scale
+			sprite.set_meta(\"x\", x)
+			sprite.set_meta(\"y\", y)
+			add_child(sprite)
+			tiles[key] = sprite
+
+	dirty = false
+
+func get_animation_offset(anim: String, x: int, y: int) -> Vector2:
+	match anim:
+		\"wave\":
+			return Vector2(0, sin(time * wave_speed + x * 0.5) * wave_amp)
+		\"sinline\":
+			return Vector2(0, sin(time * wave_speed + y * 0.5) * wave_amp)
+		\"ladder\":
+			var dir = ladder_pattern[x % ladder_pattern.size()]
+			var h = tile_step.y
+			return Vector2(0, fmod(time * ladder_speed * dir, h) - h)
+	return Vector2.ZERO
+
+func update_positions():
+	# Center of Node2D
+	var center = Vector2.ZERO
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		var target_offset = get_animation_offset(current_animation, x, y)
+
+		if animation_blend_progress < 1.0 and blend_start_offsets.has(sprite):
+			var from_offset = blend_start_offsets[sprite]
+			sprite.position = base + from_offset.lerp(target_offset, animation_blend_progress)
+		else:
+			sprite.position = base + target_offset
+
+		if sprite.scale != sprite_scale:
+			sprite.scale = sprite_scale
+
+func start_animation_blend():
+	blend_start_offsets.clear()
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		blend_start_offsets[sprite] = sprite.position - base
+
+	animation_blend_progress = 0.0
+"
+
+[node name="Levelselect" type="Node2D"]
+script = ExtResource("1_xuh2y")
+
+[node name="viewport" type="SubViewport" parent="."]
+transparent_bg = true
+size = Vector2i(1920, 512)
+
+[node name="lvlflow" type="Node3D" parent="viewport"]
+script = ExtResource("2_vttqt")
+
+[node name="camera" type="Camera3D" parent="viewport/lvlflow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.20971665)
+fov = 35.0
+
+[node name="SpotLight3D" type="SpotLight3D" parent="viewport/lvlflow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.22265446)
+shadow_enabled = true
+shadow_bias = 3.022
+shadow_normal_bias = 5.173
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_top = 121.0
+offset_right = 1920.0
+offset_bottom = 633.0
+texture = SubResource("ViewportTexture_pneju")
+
+[node name="Node2D" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.24313726)
+z_index = -100
+position = Vector2(956, 540)
+script = SubResource("GDScript_vttqt")
+spacing = Vector2(20, 20)
+sprite_scale = Vector2(0.5, 0.5)
+animation = "ladder"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 150.0
+offset_top = 540.0
+offset_right = 1764.0
+offset_bottom = 661.0
+text = "dawdawdaw"
+horizontal_alignment = 1

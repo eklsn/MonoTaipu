@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://dhxynkfivh2yf"]
+
+[ext_resource type="AudioStream" uid="uid://bfttfwar1icbb" path="res://sounds/select.ogg" id="1_w6ok4"]
+[ext_resource type="Texture2D" uid="uid://bce466y6oi3aj" path="res://sprites/keysq/ico_lvldefault.png" id="2_b6mjd"]
+[ext_resource type="Texture2D" uid="uid://bayr7jwuve4e8" path="res://sprites/keysq/stroke_10px_gray.png" id="3_b6mjd"]
+
+[sub_resource type="GDScript" id="GDScript_w6ok4"]
+script/source = "extends Camera3D
+
+var offset : float = 0.1
+var newposx : float
+func _physics_process(delta: float) -> void:
+	position.x=lerp(position.x,newposx,0.1)
+	if Input.is_action_just_pressed(\"ui_right\") or Input.is_action_just_pressed(\"mwheel_down\"):
+		$Select.play()
+		newposx+=offset
+	if Input.is_action_just_pressed(\"ui_left\") or Input.is_action_just_pressed(\"mwheel_up\"):
+		$Select.play()
+		newposx-=offset
+		
+"
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9456037, 0.3253207, 0, -0.3253207, 0.9456037, 0, 0.12810999, 0.11242801)
+current = true
+script = SubResource("GDScript_w6ok4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0.94560367, -0.32532066, 0, 0.32532066, 0.94560367, 0, -0.017470293, 0.2668614)
+visible = false
+shadow_enabled = true
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0.94560367, -0.32532066, 0, 0.32532066, 0.94560367, 0, -0.017470293, 0.2668614)
+visible = false
+
+[node name="Select" type="AudioStreamPlayer2D" parent="Camera3D"]
+position = Vector2(449, 509)
+stream = ExtResource("1_w6ok4")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(0.025437638, 0, 0, 0, 0.025437638, 0, 0, 0, 1, 0, 0.08, 0.105)
+texture = ExtResource("2_b6mjd")
+
+[node name="highlight" type="Sprite3D" parent="Sprite3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006862402, 0.0006153956)
+visible = false
+texture = ExtResource("3_b6mjd")

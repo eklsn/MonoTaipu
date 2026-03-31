@@ -1,0 +1,154 @@
+[gd_scene load_steps=25 format=3 uid="uid://ct8e7kgnatafk"]
+
+[ext_resource type="Texture2D" uid="uid://1xawywpda0tl" path="res://sprites/keysq/keysq_blur_1x_inv.png" id="1_em7uf"]
+[ext_resource type="Script" uid="uid://x1jum6hose1k" path="res://scripts/key.gd" id="1_rtr3c"]
+[ext_resource type="Texture2D" uid="uid://kiapuofng06e" path="res://sprites/keysq/keysq_blur_2x_.png" id="2_8p1g3"]
+[ext_resource type="Texture2D" uid="uid://bm25elw6srjr4" path="res://sprites/keysq/keysq_blur_2x_inv.png" id="3_iwt32"]
+[ext_resource type="Texture2D" uid="uid://d175gxv4rqrte" path="res://sprites/keysq/keysq_main.png" id="4_r2isv"]
+[ext_resource type="Texture2D" uid="uid://c8tfq2byfe14x" path="res://sprites/keysq/keysq_main_invert.png" id="5_pvau6"]
+[ext_resource type="Texture2D" uid="uid://bhsuyep27qitd" path="res://sprites/keysq/spcstroke_medium2_black.png" id="7_06ulb"]
+[ext_resource type="Texture2D" uid="uid://dxs7vkqckeyvr" path="res://sprites/keysq/keyxq_blur_1x.png" id="8_fybex"]
+[ext_resource type="Texture2D" uid="uid://bdwmn77c78qpd" path="res://sprites/keysq/spcstroke_medium2_gray.png" id="8_gwfef"]
+[ext_resource type="Texture2D" uid="uid://08t8ouq4jv3w" path="res://sprites/keysq/spcstroke_medium2_white.png" id="9_ffngo"]
+[ext_resource type="Texture2D" uid="uid://c0xdb0ieyb1fx" path="res://sprites/keysq/spcstroke_medium_black.png" id="10_222ub"]
+[ext_resource type="Texture2D" uid="uid://byoq17ys23cjj" path="res://sprites/keysq/spcstroke_medium_gray.png" id="11_6ssmj"]
+[ext_resource type="Texture2D" uid="uid://cwtedxha5moi" path="res://sprites/keysq/spcstroke_medium_white.png" id="12_o3jm2"]
+[ext_resource type="Texture2D" uid="uid://cu841n2rmob6r" path="res://sprites/keysq/spcstroke_short_black.png" id="13_ijhrx"]
+[ext_resource type="Texture2D" uid="uid://14ve0dh0eumr" path="res://sprites/keysq/spcstroke_short_gray.png" id="14_wmuet"]
+[ext_resource type="Texture2D" uid="uid://rsryw1oh6cog" path="res://sprites/keysq/spcstroke_short_white.png" id="15_jwnpw"]
+[ext_resource type="Texture2D" uid="uid://cm2vsow0jtqlj" path="res://sprites/keysq/stroke_7px_black.png" id="16_8ityo"]
+[ext_resource type="Texture2D" uid="uid://d116tuxhbkwc4" path="res://sprites/keysq/stroke_7px_gray.png" id="17_qy3lj"]
+[ext_resource type="Texture2D" uid="uid://5fir74uybt8h" path="res://sprites/keysq/stroke_7px_white.png" id="18_s2q27"]
+[ext_resource type="Texture2D" uid="uid://duwp5w0atvcnv" path="res://sprites/keysq/stroke_10px_black.png" id="19_nly3l"]
+[ext_resource type="Texture2D" uid="uid://bmrdly8xcreda" path="res://sprites/keysq/stroke_10px_gray.png" id="20_m08e5"]
+[ext_resource type="Texture2D" uid="uid://wnm0ho0wnei5" path="res://sprites/keysq/stroke_10px_white.png" id="21_83x5s"]
+
+[sub_resource type="GDScript" id="GDScript_dpfb1"]
+script/source = "extends Sprite2D
+func _input(event):
+	if event is InputEventMouseButton and event.pressed:
+		if get_rect().has_point(to_local(event.position)):
+			print(\"clicked\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dpfb1"]
+size = Vector2(512, 512)
+
+[node name="Key" type="Node2D"]
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_rtr3c")
+
+[node name="KeysqBlur1xInv" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("1_em7uf")
+
+[node name="KeysqBlur2x" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("2_8p1g3")
+
+[node name="KeysqBlur2xInv" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("3_iwt32")
+
+[node name="KeysqMain" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("4_r2isv")
+script = SubResource("GDScript_dpfb1")
+
+[node name="KeysqMainInvert" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("5_pvau6")
+
+[node name="KeysqBlur1x" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("8_fybex")
+
+[node name="SpcstrokeMedium2Black" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("7_06ulb")
+
+[node name="SpcstrokeMedium2Gray" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("8_gwfef")
+
+[node name="SpcstrokeMedium2White" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("9_ffngo")
+
+[node name="SpcstrokeMediumBlack" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("10_222ub")
+
+[node name="SpcstrokeMediumGray" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("11_6ssmj")
+
+[node name="SpcstrokeMediumWhite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("12_o3jm2")
+
+[node name="SpcstrokeShortBlack" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("13_ijhrx")
+
+[node name="SpcstrokeShortGray" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("14_wmuet")
+
+[node name="SpcstrokeShortWhite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("15_jwnpw")
+
+[node name="Stroke7PxBlack" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("16_8ityo")
+
+[node name="Stroke7PxGray" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("17_qy3lj")
+
+[node name="Stroke7PxWhite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("18_s2q27")
+
+[node name="Stroke10PxBlack" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("19_nly3l")
+
+[node name="Stroke10PxGray" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("20_m08e5")
+
+[node name="Stroke10PxWhite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("21_83x5s")
+
+[node name="Label" type="Node2D" parent="."]
+visible = false
+
+[node name="Label2" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="KeyLabel" type="Label" parent="."]
+visible = false
+offset_left = -448.0
+offset_top = -456.0
+offset_right = 448.0
+offset_bottom = 440.0
+pivot_offset = Vector2(448, 456)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.19607843)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.4627451)
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 256
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_dpfb1")

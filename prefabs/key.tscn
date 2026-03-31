@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://ct8e7kgnatafk"]
+
+[ext_resource type="Script" uid="uid://x1jum6hose1k" path="res://scripts/key.gd" id="1_rtr3c"]
+[ext_resource type="Texture2D" uid="uid://c0iehbbfam7uk" path="res://sprites/keysq/keysq_main.png" id="4_r2isv"]
+[ext_resource type="Texture2D" uid="uid://bayr7jwuve4e8" path="res://sprites/keysq/stroke_10px_gray.png" id="20_m08e5"]
+
+[node name="Key" type="Node2D"]
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_rtr3c")
+
+[node name="KeysqMain" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("4_r2isv")
+
+[node name="Stroke10PxGray" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("20_m08e5")
+
+[node name="Label" type="Node2D" parent="."]
+visible = false
+
+[node name="Label2" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="KeyLabel" type="Label" parent="."]
+visible = false
+offset_left = -448.0
+offset_top = -436.0
+offset_right = 448.0
+offset_bottom = 460.0
+pivot_offset = Vector2(448, 436)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.19607843)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.4627451)
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 256
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true

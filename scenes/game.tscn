@@ -1,0 +1,159 @@
+[gd_scene format=3 uid="uid://bdqpycu2jgrrq"]
+
+[ext_resource type="Script" uid="uid://og7qciqjrbe4" path="res://scripts/play.gd" id="1_lbhrr"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/services/gamevfx.gd" id="2_lnu2h"]
+[ext_resource type="PackedScene" uid="uid://ct1aqxmxxn4ml" path="res://prefabs/keyman.tscn" id="3_lnu2h"]
+
+[sub_resource type="GDScript" id="GDScript_lnu2h"]
+script/source = "extends Label
+
+var prevscore = 0
+var score = 0
+var sndcool = false
+func _process(delta: float) -> void:
+	text = str(score)+\"x\"
+	scale=lerp(scale,Vector2(1,1),5*delta)
+	modulate = lerp(modulate,Color.WHITE,delta)
+	if prevscore<score:
+		scale = Vector2(1.3,1.3)
+		prevscore=score
+	if score==0 && prevscore!=0:
+		var clsound = null
+		clsound = null
+		prevscore=0
+		modulate = Color.RED
+		if !sndcool:
+			sndcool = true
+			clsound = AudioStreamPlayer.new()
+			clsound.name = \"lsound\"
+			clsound.stream = get_tree().current_scene.miss_sound
+			clsound.volume_linear = 1
+			clsound.bus = \"SFX\"
+			add_child(clsound)
+			clsound.play()
+			await get_tree().create_timer(3.0).timeout
+			clsound.queue_free()
+			clsound = null
+			sndcool=false
+	
+"
+
+[node name="Game" type="Node2D" unique_id=62189022]
+script = ExtResource("1_lbhrr")
+
+[node name="fade" type="Node2D" parent="." unique_id=499674198]
+z_index = 500
+script = ExtResource("2_lnu2h")
+
+[node name="fade" type="ColorRect" parent="fade" unique_id=320046958]
+offset_right = 1920.0
+offset_bottom = 1085.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="combo" type="Label" parent="." unique_id=490348153]
+offset_left = 9.0
+offset_top = 46.0
+offset_right = 1854.0
+offset_bottom = 1102.0
+pivot_offset = Vector2(0, 1056)
+theme_override_font_sizes/font_size = 128
+text = "0x"
+vertical_alignment = 2
+script = SubResource("GDScript_lnu2h")
+
+[node name="Label2" type="Label" parent="." unique_id=1369811539]
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 2071.0
+offset_bottom = 369.0
+theme_override_font_sizes/font_size = 64
+text = "0"
+
+[node name="hpbar" type="ProgressBar" parent="." unique_id=1443141813]
+offset_left = 1100.0
+offset_top = 16.0
+offset_right = 1905.0
+offset_bottom = 64.0
+value = 100.0
+show_percentage = false
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1375043028]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -20
+offset_left = -1.0
+offset_top = -2.0
+offset_right = 1919.0
+offset_bottom = 1077.0
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="." unique_id=2141656171]
+modulate = Color(0.3529412, 0.3529412, 0.3529412, 1)
+z_index = -10
+offset_right = 1920.0
+offset_bottom = 1080.0
+volume_db = -80.0
+autoplay = true
+expand = true
+bus = &"Music"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=942714043]
+autoplay = true
+
+[node name="Preview" parent="." unique_id=1504629393 instance=ExtResource("3_lnu2h")]
+
+[node name="gameover" type="Control" parent="." unique_id=173917762]
+visible = false
+z_index = 200
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Button" type="Button" parent="gameover" unique_id=579643895]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 328.0
+offset_right = 451.0
+offset_bottom = 466.0
+
+[node name="bg" type="ColorRect" parent="gameover" unique_id=7635044]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0, 0, 0, 0.8117647)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="gameover" unique_id=1871329698]
+layout_mode = 0
+offset_left = 415.0
+offset_top = 322.0
+offset_right = 1406.0
+offset_bottom = 650.0
+bbcode_enabled = true
+text = "[font_size=144][wave]Game Over"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="try" type="Button" parent="gameover" unique_id=626836895]
+z_index = 50
+layout_mode = 0
+offset_left = 452.0
+offset_top = 615.0
+offset_right = 847.0
+offset_bottom = 758.0
+theme_override_font_sizes/font_size = 72
+text = "Try Again"
+
+[node name="quit" type="Button" parent="gameover" unique_id=408745510]
+z_index = 50
+layout_mode = 0
+offset_left = 923.0
+offset_top = 615.0
+offset_right = 1318.0
+offset_bottom = 758.0
+theme_override_font_sizes/font_size = 72
+text = "Quit to Main"
+
+[connection signal="pressed" from="gameover/try" to="." method="_on_try_pressed"]
+[connection signal="pressed" from="gameover/quit" to="." method="_on_quit_pressed"]

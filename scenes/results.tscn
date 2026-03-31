@@ -1,0 +1,349 @@
+[gd_scene load_steps=6 format=3 uid="uid://23jqdafnh3t7"]
+
+[ext_resource type="Script" uid="uid://df8a8hrq8pvp" path="res://scripts/ui/results.gd" id="1_qh7lt"]
+[ext_resource type="Script" uid="uid://31gqr3dlf6ju" path="res://scripts/ui/results_text.gd" id="3_r4wmc"]
+
+[sub_resource type="GDScript" id="GDScript_r4wmc"]
+script/source = "extends Button
+
+
+func _on_pressed() -> void:
+	Global.KEYMAN_LEVEL = Global.RES_file
+	get_tree().change_scene_to_file(\"res://scenes/game.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_s58my"]
+script/source = "extends Button
+
+
+func _on_pressed() -> void:
+	get_tree().change_scene_to_file(\"res://scenes/mainmenu.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_w6ibn"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v):
+		tile_texture = v
+		reset_tiles()
+
+@export var spacing := Vector2.ZERO:
+	set(v):
+		spacing = v
+		dirty = true
+
+@export var sprite_scale := Vector2.ONE:
+	set(v):
+		sprite_scale = v
+		dirty = true
+
+@export_enum(\"wave\", \"sinline\", \"ladder\") var animation := \"wave\":
+	set(v):
+		if v != animation:
+			start_animation_blend()
+			current_animation = v
+		animation = v
+
+@export var wave_amp := 20.0
+@export var wave_speed := 2.0
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1, -1]
+
+# NEW: fixed cols and rows
+@export var cols := 10
+@export var rows := 10
+
+var tiles = {}  # Dictionary<Vector2i, Sprite2D>
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var time = 0.0
+var dirty = true
+
+var current_animation := \"wave\"
+var animation_blend_time := 0.5
+var animation_blend_progress := 1.0
+var blend_start_offsets = {}
+
+func _ready():
+	reset_tiles()
+	var file = FileAccess.open(Global.gamepath + \"/skins/skin.txt\", FileAccess.READ)
+	if file != null:
+		var skin_name = file.get_as_text().strip_edges()
+		print(skin_name)
+		file.close()
+		var texture_path = Global.gamepath + \"/skins/\" + skin_name + \"/\"
+		tile_texture = ImageTexture.create_from_image(Image.load_from_file(texture_path+\"stroke_10px_gray.png\"))
+
+func _process(delta):
+	time += delta
+
+	if animation_blend_progress < 1.0:
+		animation_blend_progress = min(animation_blend_progress + delta / animation_blend_time, 1.0)
+
+	if dirty:
+		update_tiles()
+	update_positions()
+
+func reset_tiles():
+	for tile in tiles.values():
+		tile.queue_free()
+	tiles.clear()
+	dirty = true
+
+func update_tiles():
+	if not tile_texture:
+		return
+
+	tile_size = tile_texture.get_size()
+	tile_step = tile_size * sprite_scale + spacing
+
+	# Center origin, so we offset by half of total grid
+	var half_grid = Vector2(cols, rows) * 0.5 * tile_step
+
+	for x in range(-cols/2, cols/2 + cols % 2):
+		for y in range(-rows/2, rows/2 + rows % 2):
+			var key = Vector2i(x, y)
+			if tiles.has(key):
+				continue
+
+			var sprite = Sprite2D.new()
+			sprite.texture = tile_texture
+			sprite.scale = sprite_scale
+			sprite.set_meta(\"x\", x)
+			sprite.set_meta(\"y\", y)
+			add_child(sprite)
+			tiles[key] = sprite
+
+	dirty = false
+
+func get_animation_offset(anim: String, x: int, y: int) -> Vector2:
+	match anim:
+		\"wave\":
+			return Vector2(0, sin(time * wave_speed + x * 0.5) * wave_amp)
+		\"sinline\":
+			return Vector2(0, sin(time * wave_speed + y * 0.5) * wave_amp)
+		\"ladder\":
+			var dir = ladder_pattern[x % ladder_pattern.size()]
+			var h = tile_step.y
+			return Vector2(0, fmod(time * ladder_speed * dir, h) - h)
+	return Vector2.ZERO
+
+func update_positions():
+	# Center of Node2D
+	var center = Vector2.ZERO
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		var target_offset = get_animation_offset(current_animation, x, y)
+
+		if animation_blend_progress < 1.0 and blend_start_offsets.has(sprite):
+			var from_offset = blend_start_offsets[sprite]
+			sprite.position = base + from_offset.lerp(target_offset, animation_blend_progress)
+		else:
+			sprite.position = base + target_offset
+
+		if sprite.scale != sprite_scale:
+			sprite.scale = sprite_scale
+
+func start_animation_blend():
+	blend_start_offsets.clear()
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step
+		blend_start_offsets[sprite] = sprite.position - base
+
+	animation_blend_progress = 0.0
+"
+
+[node name="Results" type="Node2D"]
+script = ExtResource("1_qh7lt")
+metadata/_edit_vertical_guides_ = [495.0]
+
+[node name="snd" type="AudioStreamPlayer2D" parent="."]
+
+[node name="goodjob" type="RichTextLabel" parent="."]
+offset_left = 75.0
+offset_top = 59.0
+offset_right = 1305.0
+offset_bottom = 255.0
+theme_override_font_sizes/normal_font_size = 144
+bbcode_enabled = true
+text = "[wave] Good job!"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="map" type="RichTextLabel" parent="."]
+offset_left = 964.0
+offset_top = 41.0
+offset_right = 1912.0
+offset_bottom = 367.0
+theme_override_font_sizes/normal_font_size = 56
+bbcode_enabled = true
+text = "Some shit by EKLSN"
+horizontal_alignment = 1
+vertical_alignment = 2
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+autostart = true
+
+[node name="beta" type="RichTextLabel" parent="."]
+offset_left = 1200.0
+offset_top = 884.0
+offset_right = 2430.0
+offset_bottom = 1080.0
+theme_override_font_sizes/normal_font_size = 50
+bbcode_enabled = true
+text = "This is the BETA version.
+Results are not saved yet."
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(320, 0)
+speed = 0.0
+
+[node name="results" type="Node2D" parent="."]
+position = Vector2(6, 79)
+scale = Vector2(0.8400003, 0.8400003)
+
+[node name="score" type="RichTextLabel" parent="results"]
+offset_left = 109.0
+offset_top = 284.0
+offset_right = 976.0
+offset_bottom = 373.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] SCORE: 000000"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="accuracy" type="RichTextLabel" parent="results"]
+offset_left = 109.0
+offset_top = 380.0
+offset_right = 976.0
+offset_bottom = 469.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] ACCURACY: 00%"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="misses" type="RichTextLabel" parent="results"]
+offset_left = 99.0
+offset_top = 817.0
+offset_right = 966.0
+offset_bottom = 906.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] MISSES: 0"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="mehs" type="RichTextLabel" parent="results"]
+offset_left = 601.0
+offset_top = 681.0
+offset_right = 1468.0
+offset_bottom = 770.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] MEH's: 0"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-320, 0)
+speed = 0.0
+
+[node name="goods" type="RichTextLabel" parent="results"]
+offset_left = 104.0
+offset_top = 675.0
+offset_right = 971.0
+offset_bottom = 764.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] GOOD's: 0"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="greats" type="RichTextLabel" parent="results"]
+offset_left = 591.0
+offset_top = 585.0
+offset_right = 1458.0
+offset_bottom = 674.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] GREAT's: 0"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-320, 0)
+speed = 0.0
+
+[node name="taipus" type="RichTextLabel" parent="results"]
+offset_left = 109.0
+offset_top = 587.0
+offset_right = 976.0
+offset_bottom = 676.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] TAIPU's: 0"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="maxcombo" type="RichTextLabel" parent="results"]
+offset_left = 109.0
+offset_top = 468.0
+offset_right = 976.0
+offset_bottom = 557.0
+theme_override_font_sizes/normal_font_size = 73
+bbcode_enabled = true
+text = "[wave] MAX COMBO: 0"
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(-160, 0)
+speed = 0.0
+
+[node name="rank" type="RichTextLabel" parent="."]
+offset_left = 1119.0
+offset_top = 324.0
+offset_right = 1774.0
+offset_bottom = 827.0
+theme_override_font_sizes/normal_font_size = 400
+text = "SS"
+horizontal_alignment = 1
+script = ExtResource("3_r4wmc")
+startposdiff = Vector2(320, 0)
+autostart = true
+
+[node name="try" type="Button" parent="."]
+offset_left = 104.0
+offset_top = 918.0
+offset_right = 494.0
+offset_bottom = 1012.0
+theme_override_font_sizes/font_size = 60
+text = "Play Again"
+script = SubResource("GDScript_r4wmc")
+
+[node name="main" type="Button" parent="."]
+offset_left = 528.0
+offset_top = 918.0
+offset_right = 1051.0
+offset_bottom = 1012.0
+theme_override_font_sizes/font_size = 60
+text = "Return to Main"
+script = SubResource("GDScript_s58my")
+
+[node name="Node2D" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.24313726)
+z_index = -100
+position = Vector2(956, 540)
+script = SubResource("GDScript_w6ibn")
+spacing = Vector2(20, 20)
+sprite_scale = Vector2(0.5, 0.5)
+animation = "ladder"
+
+[connection signal="pressed" from="try" to="try" method="_on_pressed"]
+[connection signal="pressed" from="main" to="main" method="_on_pressed"]

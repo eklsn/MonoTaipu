@@ -1,0 +1,176 @@
+[gd_scene load_steps=5 format=3 uid="uid://c65rbqsk8663b"]
+
+[ext_resource type="Texture2D" uid="uid://bmrdly8xcreda" path="res://sprites/keysq/stroke_10px_gray.png" id="1_5ye2x"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/gamevfx.gd" id="1_p1eq3"]
+
+[sub_resource type="GDScript" id="GDScript_iqs6h"]
+script/source = "extends Node2D
+func _ready() -> void:
+	$grid.do_scale(Vector2(0.5,0.5),\"lerp\",0.1)
+"
+
+[sub_resource type="GDScript" id="GDScript_jrsgf"]
+script/source = "extends Node2D
+
+@export var tile_texture: Texture2D:
+	set(v):
+		tile_texture = v
+		reset_tiles()
+
+@export var spacing := Vector2.ZERO:
+	set(v):
+		spacing = v
+		dirty = true
+
+@export var sprite_scale := Vector2.ONE:
+	set(v):
+		sprite_scale = v
+		dirty = true
+
+@export_enum(\"wave\", \"sinline\", \"ladder\") var animation := \"wave\":
+	set(v):
+		if v != animation:
+			start_animation_blend()
+			current_animation = v
+		animation = v
+
+@export var wave_amp := 20.0
+@export var wave_speed := 2.0
+@export var ladder_speed := 50.0
+@export var ladder_pattern := [1, -1]
+
+var tiles = {}  # Dictionary<Vector2i, Sprite2D>
+var tile_size = Vector2.ZERO
+var tile_step = Vector2.ZERO
+var screen_size = Vector2.ZERO
+var time = 0.0
+var dirty = true
+
+var current_animation := \"wave\"
+var animation_blend_time := 0.5
+var animation_blend_progress := 1.0
+var blend_start_offsets = {}
+
+func _ready():
+	reset_tiles()
+
+func _process(delta):
+	time += delta
+
+	if animation_blend_progress < 1.0:
+		animation_blend_progress = min(animation_blend_progress + delta / animation_blend_time, 1.0)
+
+	var new_screen_size = get_viewport_rect().size
+	if new_screen_size != screen_size:
+		screen_size = new_screen_size
+		dirty = true
+
+	if dirty:
+		update_tiles()
+	update_positions()
+
+func reset_tiles():
+	for tile in tiles.values():
+		tile.queue_free()
+	tiles.clear()
+	screen_size = Vector2.ZERO
+	dirty = true
+
+func update_tiles():
+	if not tile_texture:
+		return
+
+	tile_size = tile_texture.get_size()
+	tile_step = tile_size * sprite_scale + spacing
+
+	var half_screen = screen_size * 0.5
+	var cols = int(ceil(half_screen.x / tile_step.x)) + 3
+	var rows = int(ceil(half_screen.y / tile_step.y)) + 3
+
+	for x in range(-cols, cols + 1):
+		for y in range(-rows, rows + 1):
+			var key = Vector2i(x, y)
+			if tiles.has(key):
+				continue
+
+			var sprite = Sprite2D.new()
+			sprite.texture = tile_texture
+			sprite.scale = sprite_scale
+			sprite.set_meta(\"x\", x)
+			sprite.set_meta(\"y\", y)
+			add_child(sprite)
+			tiles[key] = sprite
+
+	dirty = false
+
+func get_animation_offset(anim: String, x: int, y: int) -> Vector2:
+	match anim:
+		\"wave\":
+			return Vector2(0, sin(time * wave_speed + x * 0.5) * wave_amp)
+		\"sinline\":
+			return Vector2(0, sin(time * wave_speed + y * 0.5) * wave_amp)
+		\"ladder\":
+			var dir = ladder_pattern[x % ladder_pattern.size()]
+			var h = tile_step.y
+			return Vector2(0, fmod(time * ladder_speed * dir, h) - h)
+	return Vector2.ZERO
+
+func update_positions():
+	var center = screen_size * 0.5
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step + center
+		var target_offset = get_animation_offset(current_animation, x, y)
+
+		if animation_blend_progress < 1.0 and blend_start_offsets.has(sprite):
+			var from_offset = blend_start_offsets[sprite]
+			sprite.position = base + from_offset.lerp(target_offset, animation_blend_progress)
+		else:
+			sprite.position = base + target_offset
+
+		if sprite.scale != sprite_scale:
+			sprite.scale = sprite_scale
+
+func start_animation_blend():
+	var center = screen_size * 0.5
+	blend_start_offsets.clear()
+
+	for sprite in tiles.values():
+		var x = sprite.get_meta(\"x\")
+		var y = sprite.get_meta(\"y\")
+		var base = Vector2(x, y) * tile_step + center
+		blend_start_offsets[sprite] = sprite.position - base
+
+	animation_blend_progress = 0.0
+"
+
+[node name="NewIntro" type="Node2D"]
+script = SubResource("GDScript_iqs6h")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_top = 1.0
+offset_right = 1919.0
+offset_bottom = 1080.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 5
+theme_override_font_sizes/normal_font_size = 128
+bbcode_enabled = true
+text = "[font_size=76]Game by
+[font_size=60] 
+[font_size=144][wave amp=144 freq=2]EKLSN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="grid" type="Node2D" parent="."]
+script = ExtResource("1_p1eq3")
+
+[node name="Node2D" type="Node2D" parent="grid"]
+z_index = -10
+script = SubResource("GDScript_jrsgf")
+tile_texture = ExtResource("1_5ye2x")
+spacing = Vector2(20, 20)
+sprite_scale = Vector2(0.5, 0.5)
+animation = "ladder"

@@ -1,0 +1,949 @@
+[gd_scene load_steps=5 format=3 uid="uid://bdqpycu2jgrrq"]
+
+[ext_resource type="Script" uid="uid://b7xgeu1jsowec" path="res://scripts/keyman.gd" id="1_lnu2h"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/gamevfx.gd" id="2_lnu2h"]
+
+[sub_resource type="GDScript" id="GDScript_lnu2h"]
+script/source = "extends Label
+
+var prevscore = 0
+var score = 0
+var sndcool = false
+func _process(delta: float) -> void:
+	text = str(score)+\"x\"
+	scale=lerp(scale,Vector2(1,1),0.01)
+	modulate = lerp(modulate,Color.WHITE,0.0025)
+	if prevscore<score:
+		scale = Vector2(1.3,1.3)
+		prevscore=score
+	if score==0 && prevscore!=0:
+		var clsound = null
+		clsound = null
+		prevscore=0
+		modulate = Color.RED
+		if !sndcool:
+			sndcool = true
+			clsound = AudioStreamPlayer.new()
+			clsound.name = \"lsound\"
+			clsound.stream = load(\"res://sounds/miss-sound.mp3\")
+			add_child(clsound)
+			clsound.play()
+			await get_tree().create_timer(3.0).timeout
+			clsound.queue_free()
+			clsound = null
+			sndcool=false
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_lbhrr"]
+script/source = "extends Node2D
+func _ready() -> void:
+	var file = FileAccess.open(Global.gamepath + \"/skins/skin.txt\", FileAccess.READ)
+	if file != null:
+		var skin_name = file.get_as_text().strip_edges()
+		print(skin_name)
+		file.close()
+		var texture_path = Global.gamepath + \"/skins/\" + skin_name + \"/\"
+		var outtex = ImageTexture.create_from_image(Image.load_from_file(texture_path+\"stroke_10px_gray.png\"))
+		for child in get_children():
+			child.texture=outtex
+"
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_lnu2h")
+editor = false
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -20
+offset_left = -1.0
+offset_top = -2.0
+offset_right = 1919.0
+offset_bottom = 1077.0
+expand_mode = 1
+stretch_mode = 6
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+autoplay = true
+
+[node name="combo" type="Label" parent="."]
+offset_left = 9.0
+offset_top = 46.0
+offset_right = 1854.0
+offset_bottom = 1102.0
+pivot_offset = Vector2(0, 1056)
+theme_override_font_sizes/font_size = 128
+text = "0x"
+vertical_alignment = 2
+script = SubResource("GDScript_lnu2h")
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -10
+offset_right = 1920.0
+offset_bottom = 1080.0
+volume_db = -80.0
+autoplay = true
+expand = true
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 2071.0
+offset_bottom = 369.0
+theme_override_font_sizes/font_size = 64
+text = "0"
+
+[node name="keybrd" type="Node2D" parent="."]
+position = Vector2(-1, -2)
+script = SubResource("GDScript_lbhrr")
+
+[node name="Q" type="Sprite2D" parent="keybrd"]
+position = Vector2(267.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/Q"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "Q"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="W" type="Sprite2D" parent="keybrd"]
+position = Vector2(411.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/W"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "W"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="E" type="Sprite2D" parent="keybrd"]
+position = Vector2(555.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/E"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "E"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="R" type="Sprite2D" parent="keybrd"]
+position = Vector2(699.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/R"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "R"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="T" type="Sprite2D" parent="keybrd"]
+position = Vector2(843.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/T"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "T"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Y" type="Sprite2D" parent="keybrd"]
+position = Vector2(987.248, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/Y"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "Y"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="U" type="Sprite2D" parent="keybrd"]
+position = Vector2(1131.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/U"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "U"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="I" type="Sprite2D" parent="keybrd"]
+position = Vector2(1275.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/I"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "I"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="O" type="Sprite2D" parent="keybrd"]
+position = Vector2(1419.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/O"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "O"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="P" type="Sprite2D" parent="keybrd"]
+position = Vector2(1563.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/P"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "P"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="[" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1707.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/["]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "["
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="]" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1851.25, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/]"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "]"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="\\" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1994.51, 514.713)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/\\"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "\\"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="1" type="Sprite2D" parent="keybrd"]
+position = Vector2(264, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/1"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="2" type="Sprite2D" parent="keybrd"]
+position = Vector2(408, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/2"]
+anchors_preset = -1
+anchor_top = -0.001953125
+anchor_bottom = -0.001953125
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="3" type="Sprite2D" parent="keybrd"]
+position = Vector2(552, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/3"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="4" type="Sprite2D" parent="keybrd"]
+position = Vector2(696, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/4"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="5" type="Sprite2D" parent="keybrd"]
+position = Vector2(840, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/5"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="6" type="Sprite2D" parent="keybrd"]
+position = Vector2(984, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/6"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "6"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="7" type="Sprite2D" parent="keybrd"]
+position = Vector2(1128, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/7"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="8" type="Sprite2D" parent="keybrd"]
+position = Vector2(1272, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/8"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "8"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="9" type="Sprite2D" parent="keybrd"]
+position = Vector2(1416, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/9"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "9"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="0" type="Sprite2D" parent="keybrd"]
+position = Vector2(1560, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/0"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="-" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1704, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/-"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "-"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="=" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1848, 371)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/="]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "="
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="A" type="Sprite2D" parent="keybrd"]
+position = Vector2(309.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/A"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 256
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="S" type="Sprite2D" parent="keybrd"]
+position = Vector2(453.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/S"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="D" type="Sprite2D" parent="keybrd"]
+position = Vector2(597.384, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/D"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="F" type="Sprite2D" parent="keybrd"]
+position = Vector2(741.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/F"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "F"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="G" type="Sprite2D" parent="keybrd"]
+position = Vector2(885.385, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/G"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "G"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="H" type="Sprite2D" parent="keybrd"]
+position = Vector2(1029.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/H"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "H"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="J" type="Sprite2D" parent="keybrd"]
+position = Vector2(1173.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/J"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "J"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="K" type="Sprite2D" parent="keybrd"]
+position = Vector2(1317.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/K"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "K"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="L" type="Sprite2D" parent="keybrd"]
+position = Vector2(1461.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/L"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "L"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name=";" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1605.39, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/;"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = ";"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="\'" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1749.38, 657.871)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/\'"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "'"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Z" type="Sprite2D" parent="keybrd"]
+position = Vector2(385.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/Z"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "Z"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="X" type="Sprite2D" parent="keybrd"]
+position = Vector2(529.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/X"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "X"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="C" type="Sprite2D" parent="keybrd"]
+position = Vector2(673.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/C"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "C"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="V" type="Sprite2D" parent="keybrd"]
+position = Vector2(817.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/V"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "V"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="B" type="Sprite2D" parent="keybrd"]
+position = Vector2(961.231, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/B"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "B"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="N" type="Sprite2D" parent="keybrd"]
+position = Vector2(1105.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/N"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "N"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="M" type="Sprite2D" parent="keybrd"]
+position = Vector2(1249.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/M"]
+offset_left = -148.0
+offset_top = -164.0
+offset_right = 148.0
+offset_bottom = 185.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "M"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="," type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1393.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/,"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = ","
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="point" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1537.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/point"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "."
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="frontslash" type="Sprite2D" parent="keybrd"]
+visible = false
+position = Vector2(1681.23, 801.028)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("2_lnu2h")
+
+[node name="Label" type="Label" parent="keybrd/frontslash"]
+offset_left = -148.0
+offset_top = -188.0
+offset_right = 148.0
+offset_bottom = 161.0
+pivot_offset = Vector2(144, 184)
+theme_override_colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+theme_override_font_sizes/font_size = 256
+text = "/"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = 1104.0
+offset_top = 16.0
+offset_right = 1909.0
+offset_bottom = 52.0
+value = 100.0

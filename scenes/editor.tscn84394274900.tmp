@@ -1,0 +1,466 @@
+[gd_scene load_steps=16 format=3 uid="uid://do4qkdqu31e17"]
+
+[ext_resource type="Script" uid="uid://xj2yatu2hea8" path="res://scripts/editor.gd" id="1_ba0ut"]
+[ext_resource type="PackedScene" uid="uid://ct1aqxmxxn4ml" path="res://prefabs/keyman.tscn" id="2_ba0ut"]
+[ext_resource type="Script" uid="uid://cer1pdkoq8kv4" path="res://scripts/ui/editor/tab_bar.gd" id="2_xg7d5"]
+[ext_resource type="Script" uid="uid://dg5j8432v6vmc" path="res://scripts/services/gamevfx.gd" id="3_q68jb"]
+[ext_resource type="Script" uid="uid://2d0kgpplsvy" path="res://scripts/ui/editor/time_slider.gd" id="4_q68jb"]
+[ext_resource type="Script" uid="uid://dlre72yhbjcsy" path="res://scripts/ui/metaedit_fields.gd" id="6_5lcyj"]
+[ext_resource type="Script" uid="uid://bvmh11i7iqb4v" path="res://scripts/ui/editormeta_tab.gd" id="6_5tm2q"]
+[ext_resource type="Script" uid="uid://cf318gstnlptc" path="res://scripts/ui/metaedit_buttons.gd" id="7_5tm2q"]
+[ext_resource type="Script" uid="uid://bxqm52b2sfb5g" path="res://scripts/ui/editor/reset.gd" id="9_j8y2p"]
+[ext_resource type="Script" uid="uid://01vgqgx0kr2h" path="res://scripts/metronome.gd" id="10_3vi5u"]
+[ext_resource type="AudioStream" uid="uid://c5ipybh2uwtj7" path="res://sounds/metronome_s.wav" id="11_74j0u"]
+[ext_resource type="AudioStream" uid="uid://bisyln08v38r3" path="res://sounds/metronome.wav" id="11_78fwb"]
+[ext_resource type="Script" uid="uid://dos3qhffr4v0a" path="res://addons/rhythm_notifier/rhythm_notifier.gd" id="13_74j0u"]
+
+[sub_resource type="Theme" id="Theme_j8y2p"]
+default_font_size = 64
+
+[sub_resource type="GDScript" id="GDScript_j8y2p"]
+script/source = "extends Button
+
+
+func _on_pressed() -> void:
+	get_parent().get_node(\"hotkeys\").visible = !get_parent().get_node(\"hotkeys\").visible
+"
+
+[node name="Editor" type="Node2D"]
+script = ExtResource("1_ba0ut")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.3529412)
+z_index = -20
+offset_left = -1.0
+offset_top = -2.0
+offset_right = 1919.0
+offset_bottom = 1077.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+modulate = Color(0.3529412, 0.3529412, 0.3529412, 1)
+z_index = -10
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+volume_db = -80.0
+autoplay = true
+expand = true
+bus = &"Music"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+autoplay = true
+
+[node name="TabBar" type="TabBar" parent="." node_paths=PackedStringArray("EditTab", "MetaTab", "RhythmTab", "FinishTab")]
+offset_left = 536.0
+offset_right = 1460.0
+offset_bottom = 153.0
+theme_override_font_sizes/font_size = 64
+current_tab = 1
+tab_alignment = 1
+tab_count = 4
+tab_0/title = "Metadata"
+tab_1/title = "Edit"
+tab_2/title = "Rhythm"
+tab_3/title = "Finish"
+script = ExtResource("2_xg7d5")
+EditTab = NodePath("../Preview")
+MetaTab = NodePath("../MetaTab")
+RhythmTab = NodePath("../RhythmTab")
+FinishTab = NodePath("../FinishTab")
+
+[node name="fade" type="Node2D" parent="."]
+visible = false
+z_index = 2000
+script = ExtResource("3_q68jb")
+
+[node name="fade" type="ColorRect" parent="fade"]
+offset_right = 1920.0
+offset_bottom = 1085.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Preview" parent="." instance=ExtResource("2_ba0ut")]
+
+[node name="curtime" type="Label" parent="Preview"]
+offset_left = 7.0
+offset_top = 825.0
+offset_right = 236.0
+offset_bottom = 1046.0
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="time" type="HSlider" parent="Preview"]
+offset_left = 234.00002
+offset_top = 1016.0
+offset_right = 1180.0
+offset_bottom = 1032.0
+scale = Vector2(1.5, 1.5)
+max_value = 0.0
+step = 0.001
+script = ExtResource("4_q68jb")
+
+[node name="MetaTab" type="Node2D" parent="."]
+visible = false
+script = ExtResource("6_5tm2q")
+
+[node name="songname" type="LineEdit" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 230.0
+offset_right = 746.0
+offset_bottom = 296.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Untitled Track"
+script = ExtResource("6_5lcyj")
+meta_name = "name"
+
+[node name="Label" type="Label" parent="MetaTab/songname"]
+layout_mode = 0
+offset_left = -202.0
+offset_top = 13.0
+offset_right = -16.0
+offset_bottom = 53.0
+theme_override_font_sizes/font_size = 32
+text = "Song Name:"
+
+[node name="songauthor" type="LineEdit" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 319.0
+offset_right = 746.0
+offset_bottom = 385.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Unnamed Author"
+script = ExtResource("6_5lcyj")
+meta_name = "song_author"
+
+[node name="Label2" type="Label" parent="MetaTab/songauthor"]
+layout_mode = 0
+offset_left = -219.0
+offset_top = 11.0
+offset_right = -18.0
+offset_bottom = 51.0
+theme_override_font_sizes/font_size = 32
+text = "Song Author:"
+
+[node name="lvlauthor" type="LineEdit" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 409.0
+offset_right = 746.0
+offset_bottom = 475.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Unnamed Mapper"
+script = ExtResource("6_5lcyj")
+meta_name = "lvl_author"
+
+[node name="Label3" type="Label" parent="MetaTab/lvlauthor"]
+layout_mode = 0
+offset_left = -348.0
+offset_top = 10.0
+offset_right = -15.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 32
+text = "Level Author:"
+horizontal_alignment = 2
+
+[node name="preringtime" type="LineEdit" parent="MetaTab"]
+offset_left = 1554.0
+offset_top = 228.0
+offset_right = 1706.0
+offset_bottom = 294.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Pre Ring Time"
+virtual_keyboard_type = 3
+script = ExtResource("6_5lcyj")
+meta_name = "pre_ring_time"
+accepts = "float"
+
+[node name="Label" type="Label" parent="MetaTab/preringtime"]
+layout_mode = 0
+offset_left = -237.0
+offset_top = 13.0
+offset_right = -14.0
+offset_bottom = 53.0
+theme_override_font_sizes/font_size = 32
+text = "Pre Ring Time:"
+horizontal_alignment = 2
+
+[node name="ringtime" type="LineEdit" parent="MetaTab"]
+offset_left = 1554.0
+offset_top = 317.0
+offset_right = 1706.0
+offset_bottom = 383.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Ring Time"
+virtual_keyboard_type = 3
+script = ExtResource("6_5lcyj")
+meta_name = "ring_time"
+accepts = "float"
+
+[node name="Label2" type="Label" parent="MetaTab/ringtime"]
+layout_mode = 0
+offset_left = -215.0
+offset_top = 13.0
+offset_right = -14.0
+offset_bottom = 53.0
+theme_override_font_sizes/font_size = 32
+text = "Ring Time:"
+horizontal_alignment = 2
+
+[node name="hittimeframe" type="LineEdit" parent="MetaTab"]
+offset_left = 1554.0
+offset_top = 407.0
+offset_right = 1706.0
+offset_bottom = 473.0
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Post Ring Time"
+script = ExtResource("6_5lcyj")
+meta_name = "hit_timeframe"
+accepts = "float"
+
+[node name="Label3" type="Label" parent="MetaTab/hittimeframe"]
+layout_mode = 0
+offset_left = -346.0
+offset_top = 9.0
+offset_right = -13.0
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 32
+text = "Post Ring Time:"
+horizontal_alignment = 2
+
+[node name="music" type="Button" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 524.0
+offset_right = 744.0
+offset_bottom = 592.0
+theme_override_font_sizes/font_size = 36
+text = "Import music"
+script = ExtResource("7_5tm2q")
+meta_name = "audiofile"
+filters = PackedStringArray("*.mp3, *.ogg, *.wav ; Audio Files")
+
+[node name="Label4" type="Label" parent="MetaTab/music"]
+layout_mode = 0
+offset_left = -349.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 32
+text = "Music:"
+horizontal_alignment = 2
+
+[node name="video" type="Button" parent="MetaTab"]
+offset_left = 269.0
+offset_top = 610.0
+offset_right = 743.0
+offset_bottom = 678.0
+theme_override_font_sizes/font_size = 36
+text = "Import video"
+script = ExtResource("7_5tm2q")
+meta_name = "videofile"
+filters = PackedStringArray("*.ogv ; Video Files")
+
+[node name="Label5" type="Label" parent="MetaTab/video"]
+layout_mode = 0
+offset_left = -348.0
+offset_top = 18.0
+offset_right = -15.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 32
+text = "Video:"
+horizontal_alignment = 2
+
+[node name="cover" type="Button" parent="MetaTab"]
+offset_left = 267.0
+offset_top = 908.0
+offset_right = 741.0
+offset_bottom = 976.0
+theme_override_font_sizes/font_size = 36
+text = "Import cover"
+script = ExtResource("7_5tm2q")
+meta_name = "img_cover"
+filters = PackedStringArray("*.png, *.jpg, *.gif, *.bmp ; Image Files")
+
+[node name="Label6" type="Label" parent="MetaTab/cover"]
+layout_mode = 0
+offset_left = -343.0
+offset_top = 15.0
+offset_right = -10.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 32
+text = "Cover Image:"
+horizontal_alignment = 2
+
+[node name="image" type="Button" parent="MetaTab"]
+offset_left = 270.0
+offset_top = 696.0
+offset_right = 744.0
+offset_bottom = 764.0
+theme_override_font_sizes/font_size = 36
+text = "Import BG image"
+script = ExtResource("7_5tm2q")
+meta_name = "imagefile"
+filters = PackedStringArray("*.png, *.jpg, *.gif, *.bmp ; Image Files")
+
+[node name="Label7" type="Label" parent="MetaTab/image"]
+layout_mode = 0
+offset_left = -350.0
+offset_top = 12.0
+offset_right = -17.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 32
+text = "BG Image:"
+horizontal_alignment = 2
+
+[node name="Button" type="Button" parent="MetaTab"]
+offset_left = 1308.0
+offset_top = 493.0
+offset_right = 1780.0
+offset_bottom = 575.0
+theme_override_font_sizes/font_size = 36
+text = "Apply new timings now"
+script = ExtResource("9_j8y2p")
+
+[node name="FinishTab" type="Node2D" parent="."]
+visible = false
+
+[node name="RhythmTab" type="Node2D" parent="."]
+
+[node name="bpm" type="SpinBox" parent="RhythmTab"]
+offset_left = 940.0
+offset_top = 342.0
+offset_right = 1222.0
+offset_bottom = 428.0
+theme = SubResource("Theme_j8y2p")
+max_value = 512.0
+value = 120.0
+
+[node name="Label" type="Label" parent="RhythmTab/bpm"]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.094000004
+offset_left = -189.0
+offset_top = 5.0
+offset_right = -2.0
+offset_bottom = 74.916
+text = "BPM:"
+
+[node name="Button" type="Button" parent="RhythmTab"]
+offset_left = 668.0
+offset_top = 487.0
+offset_right = 1253.0
+offset_bottom = 590.0
+theme_override_font_sizes/font_size = 48
+text = "Metronome: Disabled"
+
+[node name="Metronome" type="Node2D" parent="RhythmTab"]
+script = ExtResource("10_3vi5u")
+
+[node name="0" type="ColorRect" parent="RhythmTab/Metronome"]
+offset_left = 812.0
+offset_top = 700.0
+offset_right = 852.0
+offset_bottom = 740.0
+color = Color(0.29926556, 0.29926556, 0.29926556, 1)
+
+[node name="1" type="ColorRect" parent="RhythmTab/Metronome"]
+offset_left = 895.0
+offset_top = 700.0
+offset_right = 935.0
+offset_bottom = 740.0
+color = Color(0.29926556, 0.29926556, 0.29926556, 1)
+
+[node name="2" type="ColorRect" parent="RhythmTab/Metronome"]
+offset_left = 976.0
+offset_top = 699.0
+offset_right = 1016.0
+offset_bottom = 739.0
+color = Color(0.29926556, 0.29926556, 0.29926556, 1)
+
+[node name="3" type="ColorRect" parent="RhythmTab/Metronome"]
+offset_left = 1059.0
+offset_top = 699.0
+offset_right = 1099.0
+offset_bottom = 739.0
+color = Color(0.29926556, 0.29926556, 0.29926556, 1)
+
+[node name="click" type="AudioStreamPlayer" parent="RhythmTab/Metronome"]
+stream = ExtResource("11_78fwb")
+max_polyphony = 128
+
+[node name="s_click" type="AudioStreamPlayer" parent="RhythmTab/Metronome"]
+stream = ExtResource("11_74j0u")
+max_polyphony = 128
+
+[node name="RhythmNotifier" type="Node" parent="RhythmTab/Metronome"]
+script = ExtResource("13_74j0u")
+bpm = 600.0
+beat_length = 0.1
+running = true
+metadata/_custom_type_script = "uid://dos3qhffr4v0a"
+
+[node name="Button" type="Button" parent="."]
+z_index = 1000
+offset_left = 63.0
+offset_top = 42.0
+offset_right = 447.0
+offset_bottom = 135.0
+theme_override_font_sizes/font_size = 48
+text = "View Hotkeys"
+script = SubResource("GDScript_j8y2p")
+
+[node name="hotkeys" type="Control" parent="."]
+visible = false
+z_index = 2000
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="hotkeys"]
+layout_mode = 0
+offset_left = 379.0
+offset_top = 152.0
+offset_right = 1529.0
+offset_bottom = 930.0
+color = Color(0, 0, 0, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="hotkeys"]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 180.0
+offset_right = 1499.0
+offset_bottom = 888.0
+theme_override_font_sizes/normal_font_size = 32
+text = "F11 - Full Screen
+SHIFT+ESC - Discard Changes and quit to Main Menu
+SHIFT+F12 - Discard Changes and Load File
+
+F1 - 1x speed
+F2 - 0.5x speed
+F3 - 0.25x speed
+F4 - 2x speed
+
+F9 - Hide Video (if scrolling feels laggy, video might be the case.)
+F10 - Save
+
+SHIFT+DEL - Erase all the keys and start anew (NO UNDO)
+
+HOME - Rewind to the start of the level
+Space - Pause/Play
+Arrow left - Rewind
+Arrow Right - Forward
+(Mousewheel also works)
+
+Any letter key visible on keyboard - create a hit at current time
+Right Click - delete that key. 
+"
+
+[connection signal="tab_changed" from="TabBar" to="TabBar" method="_on_tab_changed"]
+[connection signal="drag_ended" from="Preview/time" to="Preview/time" method="_on_drag_ended"]
+[connection signal="drag_started" from="Preview/time" to="Preview/time" method="_on_drag_started"]
+[connection signal="value_changed" from="Preview/time" to="Preview/time" method="_on_value_changed"]
+[connection signal="pressed" from="MetaTab/Button" to="MetaTab/Button" method="_on_pressed"]
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
