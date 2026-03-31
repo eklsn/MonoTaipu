@@ -10,3 +10,11 @@ MonoGame iteration in development since January 2026
 - Efficient rendering using SpriteBatches  
 - Optimized audio handling with ManagedBass for low latency  
 - Designed for smooth performance on CPU, RAM, and GPU
+
+## Tools and libraries used
+- Visual Studio
+- PaintDotNet
+- Audacity
+- Notepad++
+- ManagedBass
+- NativeFileDialogSharp
