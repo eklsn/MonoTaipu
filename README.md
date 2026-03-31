@@ -3,3 +3,10 @@ Project in development since February 2025
 
 MonoGame iteration in development since January 2026
 
+## Key Features
+
+- Rhythm-based typing gameplay inspired by osu! and Keyboardmania  
+- Level editor for custom content  
+- Efficient rendering using SpriteBatches  
+- Optimized audio handling with ManagedBass for low latency  
+- Designed for smooth performance on CPU, RAM, and GPU
