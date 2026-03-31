@@ -19,6 +19,7 @@ namespace Taipu.Editor.Tabs
         TextBox songName, songAuthor, mapAuthor, keyAppear, preRing, ring,hitTimeframe, keyDisappear, minusHPIdle,minusHPMiss;
         UI.Label songNameLabel, songAuthorLabel, mapAuthorLabel, audioImportLabel, bgImageImportLabel, keyAppearLabel, preRingLabel, ringLabel, hitTimeframeLabel, keyDisappearLabel, mHPIdleLabel, mHPMissLabel;
         UI.NinePatchButton audioImportButton, bgImageImportButton;
+        UI.Element labels;
 
         public MetaEditor(Editor.EditorScene root)
         {
@@ -27,7 +28,7 @@ namespace Taipu.Editor.Tabs
 
             desktop = new Desktop { HasExternalTextInput = true, Scale = myraScale };
             Global.game.Window.TextInput += (s, a) => desktop.OnChar(a.Character);
-
+            labels = new();
             songNameLabel = CreateLabel(new Vector2(100, 95), "Song name");
             songName = CreateTextBox(78, 98, "Song name here...");
 
@@ -67,6 +68,7 @@ namespace Taipu.Editor.Tabs
 
         public void Update(GameTime gameTime)
         {
+            labels.Update(gameTime);
             audioImportButton.Update(gameTime);
             bgImageImportButton.Update(gameTime);
             audioImportButton.text = root.level.audioFile;
@@ -126,7 +128,9 @@ namespace Taipu.Editor.Tabs
 
         private UI.Label CreateLabel(Vector2 pos, string text)
         {
-            return new UI.Label(pos, text, font) { localScale = new Vector2(0.15f) };
+            UI.Label retLabel = new UI.Label(pos, text, font) { localScale = new Vector2(0.15f) };
+            labels.AddChild(retLabel);
+            return retLabel;
         }
 
         private UI.NinePatchButton CreateButton(Vector2 pos, string text)

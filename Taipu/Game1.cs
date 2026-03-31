@@ -55,7 +55,6 @@ namespace Taipu
             KeyboardMan.Update();
             base.Update(gameTime);
             SceneManager.currentScene.Update();
-            Debug.WriteLine((double)1.0/Global.deltaTime);
             
         }
 
