@@ -1,6 +1,24 @@
-# Taipu (MonoGame)
+# Taipu
 Project in development since February 2025
 
 MonoGame iteration in development since January 2026
 
-A rhythm game where you type... letters... to the beat
+> The game is still a work-in-progress.
+> 
+> Older Godot version is available in old_godot branch
+
+## Key Features
+
+- Rhythm-based typing gameplay inspired by osu! and Keyboardmania  
+- Level editor for custom content   
+- Optimized audio handling with ManagedBass for low latency  
+
+## Tools and libraries used
+- Visual Studio
+- PaintDotNet
+- Audacity
+- Notepad++
+- ManagedBass
+- NativeFileDialogSharp
+
+All the libraries, binaries, music and content belong to their respective authors.

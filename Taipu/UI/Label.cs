@@ -19,9 +19,8 @@ namespace Taipu.UI
             localPosition = position;
             this.font = font;
         }
-        protected override void OnDraw(SpriteBatch spriteBatch)
+        protected override void OnUpdate(GameTime gameTime)
         {
-            
             size = font.MeasureString(text);
             if (parent != null)
             {
@@ -29,9 +28,11 @@ namespace Taipu.UI
             }
             if (centerOrig)
             {
-                origin = centerOrigin; 
+                origin = centerOrigin;
             }
-            Update(Global.gameTime);
+        }
+        protected override void OnDraw(SpriteBatch spriteBatch)
+        {
             Global.spriteBatch.DrawString(
                     font,
                     text,
