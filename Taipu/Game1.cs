@@ -12,7 +12,7 @@ namespace Taipu
         public Game1()
         {
             Debug.WriteLine("Welcome to Taipu <3");
-            Debug.WriteLine("Version b01m");
+            
             Global.graphicsDeviceManager = new GraphicsDeviceManager(this);
             Global.contentManager = Content;
             Global.game = this;
