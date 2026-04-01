@@ -33,6 +33,7 @@ It's driven by the MonoGame Framework and Un4Seen BASS(with ManagedBass wrapper)
 - Visual Studio
 - PaintDotNet
 - Audacity
+- FL Studio
 - Notepad++
 - ManagedBass
 - NativeFileDialogSharp
