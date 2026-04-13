@@ -41,7 +41,7 @@ namespace Taipu
             
             var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
             MatrixUpscaler.SetVRes(1280, 720);
-            WindowManager.SetResolution(2560,1440);
+            WindowManager.SetResolution(1280,720);
             //WindowManager.SetFullscreenBorderless(true);
             MatrixUpscaler.Update(Global.graphicsDevice.Viewport);
             SceneManager.LoadScene(new Scenes.Disclaimer());
