@@ -27,7 +27,7 @@ namespace Taipu.Editor
         public JukeboxSynced music;
         public TaipuMap level;
         public bool paused;
-        public String mapPath;
+        public string mapPath;
         public MapLoader loader;
         public double time => music.streamPosition;
 
@@ -39,7 +39,7 @@ namespace Taipu.Editor
         public float scrollFactor = 1.0f;
 
         public BadMetronomeTest metronome;
-        public EditorScene(String mapPath)
+        public EditorScene(string mapPath)
         {
             while (true)
             {
@@ -190,14 +190,14 @@ namespace Taipu.Editor
         }
         public void ResnapAll(int divisor)
         {
-            foreach (String[] key in level.keys)
+            foreach (string[] key in level.keys)
             {
                 key[0] = Audio.BeatSnap.toDivisor(Convert.ToDouble(key[0]), level.bpm, divisor).ToString();
             }
         }
         public void CreateKey(char keypressed)
         {
-            String[] arrtemp = [Math.Round(CreateKeyTime(time), 3).ToString(), keypressed.ToString()];
+            string[] arrtemp = [Math.Round(CreateKeyTime(time), 3).ToString(), keypressed.ToString()];
             int insPos = 0;
             while (insPos < level.keys.Count && double.Parse(level.keys[insPos][0]) < time)
             {

@@ -14,7 +14,7 @@ namespace Taipu.Editor.Tabs
         Editor.EditorScene root;
         Desktop desktop;
         BitmapFont font;
-        Vector2 myraScale = Vector2.One * 2;
+        Vector2 myraScale = (Vector2.One * 2)*(WindowManager.currentResolution/new Vector2(1920,1080));
 
         TextBox songName, songAuthor, mapAuthor, keyAppear, preRing, ring,hitTimeframe, keyDisappear, minusHPIdle,minusHPMiss;
         UI.Label songNameLabel, songAuthorLabel, mapAuthorLabel, audioImportLabel, bgImageImportLabel, keyAppearLabel, preRingLabel, ringLabel, hitTimeframeLabel, keyDisappearLabel, mHPIdleLabel, mHPMissLabel;

@@ -12,7 +12,7 @@ namespace Taipu
         public Game1()
         {
             Debug.WriteLine("Welcome to Taipu <3");
-            
+                
             Global.graphicsDeviceManager = new GraphicsDeviceManager(this);
             Global.contentManager = Content;
             Global.game = this;
@@ -41,7 +41,7 @@ namespace Taipu
             
             var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
             MatrixUpscaler.SetVRes(1280, 720);
-            WindowManager.SetResolution(1920,1080);
+            WindowManager.SetResolution(2560,1440);
             //WindowManager.SetFullscreenBorderless(true);
             MatrixUpscaler.Update(Global.graphicsDevice.Viewport);
             SceneManager.LoadScene(new Scenes.Disclaimer());

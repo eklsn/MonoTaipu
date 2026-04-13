@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MonoGame.Extended.BitmapFonts;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -13,20 +14,26 @@ namespace Taipu.Editor.Tabs
         public Sprite background;
         public Texture2D bgTex;
         KeyboardBg keyboard;
+        public BitmapFont font;
+        public UI.Label bpmLabel;
         public Editor.bottomBar bottomBar = new();
         public Editor.beatsnapBar beatsnapBar = new();
         public float scrollFactor = 1.0f;
         public Main(Editor.EditorScene root)
         {
             this.root = root;
+            font = SkinLoader.getFont("fonts/main/main.fnt");
             keyboard = new();
             //keyboard.editor = this;
+            bpmLabel = new(new Vector2(120,110),"!!! Set the BPM in Audio menu to edit",font);
+            bpmLabel.textScale = Vector2.One / 4f;
             renderKeys = new();
             bottomBar.localPosition = new Vector2(0, 300);
         }
         public void Update(GameTime gameTime) 
         {
             if (root?.currentTab == me)
+            bpmLabel.Update(gameTime);
             beatsnapBar.Update(gameTime);
             root.beatSnapDivisor = beatsnapBar.beatSnap;
             bottomBar.localPosition = Vector2.Lerp(bottomBar.localPosition, Vector2.Zero, 8f * (float)Global.deltaTime);
@@ -207,7 +214,10 @@ namespace Taipu.Editor.Tabs
                 }
 
             }
-
+            if (root.level.bpm==0)
+            {
+                bpmLabel.Draw(Global.spriteBatch);
+            }
             //timel.Draw(level.keys);
             //textbox.Draw();
         }

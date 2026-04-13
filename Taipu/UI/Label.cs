@@ -13,6 +13,7 @@ namespace Taipu.UI
         public bool centerOrig = false;
         public Vector2 textScale = Vector2.One;
         public BitmapFont font;
+        public bool initialized = false;
         public Label(Vector2 position, String text, BitmapFont font)
         {
             this.text = text;
@@ -30,20 +31,24 @@ namespace Taipu.UI
             {
                 origin = centerOrigin;
             }
+            initialized = true;
         }
         protected override void OnDraw(SpriteBatch spriteBatch)
         {
-            Global.spriteBatch.DrawString(
-                    font,
-                    text,
-                    absolutePosition,
-                    color,
-                    0f,
-                    origin,
-                    absoluteScale*textScale,
-                    SpriteEffects.None,
-                    0f
-                );
+            if (initialized)
+            {
+                Global.spriteBatch.DrawString(
+                        font,
+                        text,
+                        absolutePosition,
+                        color,
+                        0f,
+                        origin,
+                        absoluteScale * textScale,
+                        SpriteEffects.None,
+                        0f
+                    );
+            }
         }
     }
 }
