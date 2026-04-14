@@ -41,7 +41,7 @@ namespace Taipu.Editor
         public BadMetronomeTest metronome;
         public EditorScene(string mapPath)
         {
-            while (true)
+            while (mapPath == null)
             {
                 var openResult = Dialog.FileOpen("taipu");
                 if (openResult.IsOk)

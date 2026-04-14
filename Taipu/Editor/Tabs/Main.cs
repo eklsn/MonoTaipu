@@ -54,7 +54,7 @@ namespace Taipu.Editor.Tabs
             keyboard.Update();
             foreach (String[] key in root.level.keys)
             {
-                if (root.time < double.Parse(key[0]) - root.level.preRingTime - root.level.ringTime)
+                if (root.time+10 < double.Parse(key[0]) - root.level.preRingTime - root.level.ringTime)
                 {
                     break;
                 }

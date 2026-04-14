@@ -75,7 +75,7 @@ namespace Taipu.Scenes
             
             if (time>9)
             {
-                SceneManager.LoadScene(new Taipu.Editor.EditorScene(null));
+                SceneManager.LoadScene(new Scenes.MainMenu.TestMainMenu());
             }
         }
         public void Draw()
