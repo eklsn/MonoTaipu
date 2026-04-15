@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Framework;
 using NativeFileDialogSharp;
@@ -67,6 +68,11 @@ namespace Taipu.Play
         public void Update()
         {
             keyboard.Update();
+            if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.Down(Keys.Escape))
+            {
+                music.Stop();
+                SceneManager.LoadScene(new Scenes.MainMenu.TestMainMenu());
+            }
         }
         public void Draw()
         {

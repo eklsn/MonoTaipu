@@ -7,6 +7,7 @@
         public static void LoadScene(Scene scene)
         {
             scene.Load();
+            currentScene = null;
             currentScene = scene;
         }
     }

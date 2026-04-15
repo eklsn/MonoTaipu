@@ -20,6 +20,9 @@ namespace Taipu
         }
         public static void ToggleFullscreen()
         {
+            graphicsDeviceManager.PreferredBackBufferWidth = displayMode.Width;
+            graphicsDeviceManager.PreferredBackBufferHeight = displayMode.Height;
+            graphicsDeviceManager.ApplyChanges();
             graphicsDeviceManager.ToggleFullScreen();
         }
         public static void ToggleFullscreenBorderless()
@@ -44,6 +47,12 @@ namespace Taipu
         {
             graphicsDeviceManager.PreferredBackBufferWidth = width;
             graphicsDeviceManager.PreferredBackBufferHeight = height;
+            graphicsDeviceManager.ApplyChanges();
+        }
+        public static void ResizeToDisp()
+        {
+            graphicsDeviceManager.PreferredBackBufferWidth = displayMode.Width;
+            graphicsDeviceManager.PreferredBackBufferHeight = displayMode.Height;
             graphicsDeviceManager.ApplyChanges();
         }
     }

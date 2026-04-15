@@ -16,6 +16,7 @@ namespace Taipu
         public ManagedBass.PlaybackState state => Bass.ChannelIsActive(tempoStream);
         public void LoadStream(String path)
         {
+            Free();
             musicStream = Bass.CreateStream(path,0,0,BassFlags.Prescan | BassFlags.Decode);
             if (musicStream == 0)
             {
@@ -32,13 +33,36 @@ namespace Taipu
 
         }
         public void Start(bool restart) {
+            if (tempoStream != 0) {
             Bass.ChannelPlay(tempoStream, restart);
+            }
         }
 
-        public void Stop() => Bass.ChannelStop(tempoStream);
+        public void Stop()
+        {
+            if (tempoStream != 0)
+            {
+                Bass.ChannelStop(tempoStream);
+            }
+        }
         public void Seek(double secondsPosition)
         {
+            if (tempoStream != 0) { 
             Bass.ChannelSetPosition(tempoStream, Bass.ChannelSeconds2Bytes(tempoStream,secondsPosition));
+                }
+        }
+        public void Free()
+        {
+            if (tempoStream != 0)
+            {
+                Bass.StreamFree(tempoStream);
+                tempoStream = 0;
+            }
+            if (musicStream != 0)
+            {
+                Bass.StreamFree(musicStream);
+                musicStream = 0;
+            }
         }
     }
 }

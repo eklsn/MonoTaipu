@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ManagedBass;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NativeFileDialogSharp;
 using System;
 using System.IO;
 using System.Text.Json;
+using Taipu.Scenes.MainMenu;
 
 namespace Taipu.Editor
 {
@@ -62,7 +64,6 @@ namespace Taipu.Editor
             LoadAudio();
             LoadBackground();
 
-            while (level == null) { }
 
             currentTab = EditorTabs.Main;
             metronome = new(level.bpm, level.beatOffset);
@@ -89,6 +90,8 @@ namespace Taipu.Editor
         }
         public void Update()
         {
+            
+            if (SceneManager.currentScene != this) {  return; }
             if (currentTab == EditorTabs.Audio)
             {
                 metronome.bpm = level.bpm;
@@ -103,6 +106,19 @@ namespace Taipu.Editor
             if (KeyboardMan.JustPressed(Keys.F2))
             {
                 currentTab = EditorTabs.Main;
+            }
+            if (KeyboardMan.Down(Keys.LeftShift) && KeyboardMan.Down(Keys.Escape))
+            {
+                if (music.tempoStream != 0)
+                {
+                    ManagedBass.Bass.ChannelStop(music.tempoStream);
+                }
+
+                music.Free();
+                music = null;
+
+                SceneManager.LoadScene(new Scenes.MainMenu.TestMainMenu());
+                return;
             }
             if (KeyboardMan.JustPressed(Keys.F3))
             {
@@ -154,14 +170,14 @@ namespace Taipu.Editor
                 {
                     scrollFactor = scrollFactor * 2;
                 }
-                if (KeyboardMan.Down(Keys.Left) || MouseMan.MWheelUp())
-                {
-                    music.Seek(music.streamPosition - (0.05 * scrollFactor));
-                }
-                if (KeyboardMan.Down(Keys.Right) || MouseMan.MWheelDown())
-                {
-                    music.Seek(music.streamPosition + (0.05 * scrollFactor));
-                }
+                //if (KeyboardMan.Down(Keys.Left) || MouseMan.MWheelUp())
+                //{
+                //    music.Seek(music.streamPosition - (0.05 * scrollFactor));
+                //}
+                //if (KeyboardMan.Down(Keys.Right) || MouseMan.MWheelDown())
+                //{
+                //    music.Seek(music.streamPosition + (0.05 * scrollFactor));
+                //}
             }
             switch (currentTab)
             {

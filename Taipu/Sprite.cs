@@ -52,5 +52,22 @@ namespace Taipu
                 );
             }
         }
+        public virtual void DrawAt(Vector2 newPos)
+        {
+            if (visible)
+            {
+                Global.spriteBatch.Draw(
+                     texture: texture,
+                     position: newPos,
+                     sourceRectangle: null,
+                     color: color,
+                     rotation: 0f,
+                     origin: origin,
+                     scale: scale,
+                     effects: SpriteEffects.None,
+                     layerDepth: 0f
+                 );
+            }
+        }
     }
 }

@@ -12,7 +12,6 @@ namespace Taipu
         public BadMetronomeTest(double b, double o)
         {
             bpm = b; offset = o;
-            Bass.Configure(Configuration.PlaybackBufferLength, 10);
             s = Bass.SampleLoad(SkinLoader.getRelPath("tick.wav"), 0, 0, 128, BassFlags.Default);
         }
 
