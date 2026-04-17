@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace Taipu.VFX
 {
@@ -31,10 +32,10 @@ namespace Taipu.VFX
         
         public void Update()
         {
-            currentYOff += speed;
+            currentYOff += speed*(float)Global.deltaTime;
             if (currentYOff >= offset.Y)
             {
-                currentYOff -= (int)offset.Y;
+                currentYOff %= offset.Y;
             }
             tile.scale = this.scale;
             tile.color = this.color;

@@ -30,15 +30,15 @@ namespace Taipu.Scenes.MainMenu
             playBtn = new(SkinLoader.getTexture("playbtn.png"), Vector2.One/4, MatrixUpscaler.virtualResolution / 2 + new Vector2(-200, 100));
             editBtn = new(SkinLoader.getTexture("editmode.png"), Vector2.One / 4, MatrixUpscaler.virtualResolution / 2 + new Vector2(200, 100));
             bg = new(SkinLoader.getTexture("stroke_10px_gray.png"), new Vector2(0,-300), Vector2.One / 4, new Vector2(144, 144), 50, 50);
-            bg.speed = 0.4f;
+            bg.speed = 16f;
             bg.color.A = (byte)90f;
         }
         public void Update()
         {
             if (fade.A > (byte)0)
             {
-                int fadetemp;
-                fadetemp = fade.A-15;
+                double fadetemp;
+                fadetemp = fade.A-(900*Global.deltaTime);
                 fade.A = (byte)Math.Clamp(fadetemp,0,255);
                 
             }

@@ -155,7 +155,10 @@ namespace Taipu.Editor.Tabs
                     }
                     if (keypressed != '\0')
                     {
-                        root.CreateKey(keypressed);
+                        if (root.level.bpm > 0)
+                        {
+                            root.CreateKey(keypressed);
+                        }
 
                     }
                 }
